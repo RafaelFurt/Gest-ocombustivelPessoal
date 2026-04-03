@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Gestão de Frotas - Multi Veículos</title>
+    <title>Gestão de Frotas - Custos Dinâmicos</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -24,6 +24,7 @@
         .card:hover { transform: translateY(-2px); }
         h1 { color: #ffffff; margin-bottom: 5px; font-size: 1.6rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         h2 { color: #006699; margin-bottom: 15px; border-left: 4px solid #006699; padding-left: 12px; font-size: 1.3rem; }
+        h3 { color: #333; margin-bottom: 15px; font-size: 1.1rem; }
         
         .tab-buttons {
             display: flex;
@@ -83,8 +84,6 @@
             font-weight: 600;
             cursor: pointer;
             transition: opacity 0.3s;
-            width: 100%;
-            max-width: 300px;
         }
         button:hover { opacity: 0.9; }
         
@@ -184,6 +183,45 @@
             margin-top: 5px;
         }
         
+        .custo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+        .custo-item-actions button {
+            background: none;
+            color: #dc3545;
+            padding: 5px 10px;
+            width: auto;
+            font-size: 12px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            margin: 20px;
+        }
+        
         @media (max-width: 768px) {
             body { padding: 10px; }
             .card { padding: 15px; }
@@ -208,7 +246,7 @@
 <body>
 <div class="container">
     <h1>🚗 Gestão de Frotas</h1>
-    <p style="color: white; margin-bottom: 15px; font-size: 0.85rem;">Sistema multi-veículos com sincronização na nuvem</p>
+    <p style="color: white; margin-bottom: 15px; font-size: 0.85rem;">Sistema multi-veículos com custos dinâmicos</p>
 
     <div class="veiculo-selector" id="veiculoSelector">
         <strong>📌 Veículo:</strong>
@@ -313,32 +351,26 @@
         </div>
         <div class="card">
             <h2>📋 Histórico de Manutenções</h2>
-            <div class="table-container"><table id="tabelaManutencao"><thead><tr><th>Data</th><th>Veículo</th><th>Tipo</th><th>KM</th><th>Valor</th><th>Observação</th></tr></thead><tbody></tbody></table></div>
+            <div class="table-container"><table id="tabelaManutencao"><thead><tr><th>Data</th><th>Veículo</th><th>Tipo</th><th>KM</th><th>Valor</th><th>Observação</th></tr></thead><tbody></tbody><tr></div>
         </div>
     </div>
 
-    <!-- ==================== CUSTOS FIXOS ==================== -->
+    <!-- ==================== CUSTOS DINÂMICOS ==================== -->
     <div id="tab-custos" class="tab-content">
         <div class="card">
-            <h2>💰 Custos Fixos - Configuração</h2>
-            <div class="info-box">💡 Informe o valor TOTAL do custo. IPVA pode ser parcelado.</div>
-            <div class="form-grid">
-                <div class="form-group"><label>IPVA (R$)</label><input type="number" id="ipvaValor" step="0.01" placeholder="Valor total"></div>
-                <div class="form-group"><label>Pagamento IPVA</label><select id="ipvaParcelas"><option value="1">À vista (1x)</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option></select></div>
-                <div class="form-group"><label>Seguro (R$)</label><input type="number" id="seguroValor" step="0.01" placeholder="Valor"></div>
-                <div class="form-group"><label>Periodicidade</label><select id="seguroPeriodo"><option value="anual">Anual</option><option value="mensal">Mensal</option></select></div>
-                <div class="form-group"><label>Licenciamento (R$/ano)</label><input type="number" id="licenciamentoValor" step="0.01"></div>
-                <div class="form-group"><label>Parcela do Carro (R$/mês)</label><input type="number" id="parcelaValor" step="0.01"></div>
-                <div class="form-group"><label>Estacionamento (R$/mês)</label><input type="number" id="estacionamentoValor" step="0.01"></div>
-                <div class="form-group"><label>Lavagem (R$/mês)</label><input type="number" id="lavagemValor" step="0.01"></div>
-                <div class="form-group"><label>Outros (R$/mês)</label><input type="number" id="outrosValor" step="0.01"></div>
-            </div>
-            <button onclick="salvarCustosFixos()">💾 Salvar</button>
+            <h2>💰 Custos Fixos - Lista Dinâmica</h2>
+            <div class="info-box">💡 Adicione quantos custos quiser: IPVA, Seguro, Netflix, Garagem, Assinaturas, etc.</div>
+            
+            <div id="listaCustos" style="margin-bottom: 20px;"></div>
+            
+            <button onclick="abrirModalCusto()" style="width: auto; background: #28a745;">➕ Adicionar Custo</button>
         </div>
+
         <div class="card">
             <h2>📊 Demonstrativo de Custos</h2>
             <div id="demonstrativoCustos"></div>
         </div>
+
         <div class="card">
             <h2>💰 Resumo Financeiro</h2>
             <div class="custo-total-card" id="resumoFinanceiro">
@@ -365,8 +397,8 @@
 </div>
 
 <!-- Modal para cadastrar veículo -->
-<div id="modalVeiculo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:white; padding:25px; border-radius:20px; max-width:350px; margin:20px;">
+<div id="modalVeiculo" class="modal">
+    <div class="modal-content">
         <h3 style="color:#006699;">➕ Novo Veículo</h3>
         <div class="form-group"><label>Nome/Modelo</label><input type="text" id="novoVeiculoNome" placeholder="Ex: Nissan Sentra"></div>
         <div class="form-group"><label>Placa</label><input type="text" id="novoVeiculoPlaca" placeholder="ABC-1234"></div>
@@ -378,14 +410,49 @@
     </div>
 </div>
 
+<!-- Modal para adicionar custo -->
+<div id="modalCusto" class="modal">
+    <div class="modal-content">
+        <h3 style="color:#006699;">💰 Adicionar Custo</h3>
+        <div class="form-group"><label>Nome do Custo</label><input type="text" id="custoNome" placeholder="Ex: IPVA, Netflix, Garagem"></div>
+        <div class="form-group"><label>Valor (R$)</label><input type="number" id="custoValor" step="0.01"></div>
+        <div class="form-group"><label>Periodicidade</label>
+            <select id="custoPeriodo">
+                <option value="mensal">Mensal</option>
+                <option value="anual">Anual</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Número de Parcelas</label>
+            <select id="custoParcelas">
+                <option value="1">À vista (1x)</option>
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+                <option value="5">5x</option>
+                <option value="6">6x</option>
+                <option value="7">7x</option>
+                <option value="8">8x</option>
+                <option value="9">9x</option>
+                <option value="10">10x</option>
+                <option value="11">11x</option>
+                <option value="12">12x</option>
+            </select>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px;">
+            <button onclick="salvarCusto()" style="flex:1;">Salvar</button>
+            <button onclick="fecharModalCusto()" style="flex:1; background:#ccc;">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkri0v97EHHVvVqJBtpeYRjlI3Na2BfC02l-EZLqJ-auFSOnZKyFCwfN7Y26u-r-FKyg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwrLXDpNOKm-7rRlO15CO6zUxqcxbrZzDHnq4Gox0HNuy_mg6_Jvf50U-xaht1qtlJcxg/exec';
     
     let veiculos = [];
     let veiculoAtualId = null;
     let dadosAbastecimentos = [];
     let dadosManutencoes = [];
-    let custosFixos = {};
+    let custosDinamicos = [];
     
     const intervalosManutencao = {
         oleo: { km: 10000, meses: 6, nome: 'Troca de Óleo' },
@@ -412,9 +479,8 @@
                 veiculos = data.veiculos || [];
                 dadosAbastecimentos = data.abastecimentos || [];
                 dadosManutencoes = data.manutencoes || [];
-                custosFixos = data.custos || {};
+                custosDinamicos = data.custosDinamicos || [];
                 
-                // NÃO cria veículo padrão - apenas usa os que existem
                 if (veiculos.length > 0 && !veiculoAtualId) {
                     veiculoAtualId = veiculos[0].id;
                 }
@@ -422,7 +488,6 @@
                 atualizarSeletorVeiculos();
                 atualizarTudo();
                 
-                // Se não há veículos, mostra mensagem
                 if (veiculos.length === 0) {
                     document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
                     document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
@@ -435,10 +500,7 @@
     }
     
     async function salvarAbastecimento() {
-        if (!veiculoAtualId) {
-            alert('Cadastre um veículo primeiro!');
-            return;
-        }
+        if (!veiculoAtualId) { alert('Cadastre um veículo primeiro!'); return; }
         
         const preco = parseFloat(document.getElementById('preco').value);
         const litros = parseFloat(document.getElementById('litros').value);
@@ -478,10 +540,7 @@
     }
     
     async function salvarManutencao() {
-        if (!veiculoAtualId) {
-            alert('Cadastre um veículo primeiro!');
-            return;
-        }
+        if (!veiculoAtualId) { alert('Cadastre um veículo primeiro!'); return; }
         
         const tipoKey = document.getElementById('tipoServico').value;
         const manutencao = {
@@ -517,33 +576,48 @@
         }
     }
     
-    async function salvarCustosFixos() {
-        if (!veiculoAtualId) {
-            alert('Cadastre um veículo primeiro!');
-            return;
-        }
+    async function salvarCusto() {
+        if (!veiculoAtualId) { alert('Cadastre um veículo primeiro!'); return; }
         
-        const custosData = {
+        const nome = document.getElementById('custoNome').value;
+        const valor = parseFloat(document.getElementById('custoValor').value);
+        const periodo = document.getElementById('custoPeriodo').value;
+        const parcelas = parseInt(document.getElementById('custoParcelas').value);
+        
+        if (!nome || !valor) { alert('Preencha Nome e Valor do custo!'); return; }
+        
+        const custo = {
+            id: Date.now().toString(),
             veiculoId: veiculoAtualId,
-            ipva: { valor: parseFloat(document.getElementById('ipvaValor').value) || 0, parcelas: parseInt(document.getElementById('ipvaParcelas').value) },
-            seguro: { valor: parseFloat(document.getElementById('seguroValor').value) || 0, periodo: document.getElementById('seguroPeriodo').value },
-            licenciamento: parseFloat(document.getElementById('licenciamentoValor').value) || 0,
-            parcela: parseFloat(document.getElementById('parcelaValor').value) || 0,
-            estacionamento: parseFloat(document.getElementById('estacionamentoValor').value) || 0,
-            lavagem: parseFloat(document.getElementById('lavagemValor').value) || 0,
-            outros: parseFloat(document.getElementById('outrosValor').value) || 0
+            nome: nome,
+            valor: valor,
+            periodo: periodo,
+            parcelas: parcelas
         };
         
         try {
-            await fetch(`${SCRIPT_URL}?action=addCustosFixos`, {
+            await fetch(`${SCRIPT_URL}?action=addCusto`, {
                 method: 'POST',
                 mode: 'no-cors',
-                body: JSON.stringify(custosData)
+                body: JSON.stringify(custo)
             });
-            alert('✅ Custos fixos salvos!');
+            alert('✅ Custo adicionado!');
+            fecharModalCusto();
             await carregarTodosDados();
         } catch (error) {
             alert('Erro ao salvar.');
+        }
+    }
+    
+    async function removerCusto(custoId) {
+        if (!confirm('Remover este custo permanentemente?')) return;
+        
+        try {
+            await fetch(`${SCRIPT_URL}?action=removeCusto&id=${custoId}`, { method: 'GET', mode: 'no-cors' });
+            alert('✅ Custo removido!');
+            await carregarTodosDados();
+        } catch (error) {
+            alert('Erro ao remover.');
         }
     }
     
@@ -579,28 +653,22 @@
         return {
             abastecimentos: dadosAbastecimentos.filter(a => a.veiculoId === veiculoAtualId),
             manutencoes: dadosManutencoes.filter(m => m.veiculoId === veiculoAtualId),
-            custos: custosFixos[veiculoAtualId] || { 
-                ipva: { valor: 0, parcelas: 1 }, seguro: { valor: 0, periodo: 'anual' },
-                licenciamento: 0, parcela: 0, estacionamento: 0, lavagem: 0, outros: 0 
-            }
+            custos: custosDinamicos.filter(c => c.veiculoId === veiculoAtualId)
         };
     }
     
-    function calcularCustoMensalFixos() {
+    function calcularCustoMensalTotal() {
         const custos = getDadosVeiculo().custos;
         let total = 0;
-        const ipvaMensal = custos.ipva?.valor ? (custos.ipva.valor / (custos.ipva.parcelas || 1)) / (12 / (custos.ipva.parcelas || 1)) : 0;
-        total += ipvaMensal;
-        let seguroMensal = 0;
-        if (custos.seguro?.valor) {
-            seguroMensal = custos.seguro.periodo === 'anual' ? custos.seguro.valor / 12 : custos.seguro.valor;
-        }
-        total += seguroMensal;
-        total += (custos.licenciamento || 0) / 12;
-        total += (custos.parcela || 0);
-        total += (custos.estacionamento || 0);
-        total += (custos.lavagem || 0);
-        total += (custos.outros || 0);
+        custos.forEach(c => {
+            let valorMensal = c.valor;
+            if (c.periodo === 'anual') {
+                valorMensal = c.valor / 12;
+            }
+            // Dividir pelo número de parcelas
+            valorMensal = valorMensal / (c.parcelas || 1);
+            total += valorMensal;
+        });
         return total;
     }
     
@@ -642,7 +710,6 @@
             consumoEtanol: (cEta.reduce((a,b)=>a+b,0)/cEta.length || 0).toFixed(1),
             custoGasolina: (custoGas.reduce((a,b)=>a+b,0)/custoGas.length || 0).toFixed(2),
             custoEtanol: (custoEta.reduce((a,b)=>a+b,0)/custoEta.length || 0).toFixed(2),
-            totalAbastecimentos: comConsumo.length,
             ultimoConsumo: comConsumo[comConsumo.length-1]?.consumo || 0,
             melhorConsumo: Math.max(...comConsumo.map(c=>c.consumo)) || 0,
             piorConsumo: Math.min(...comConsumo.map(c=>c.consumo)) || 0
@@ -674,6 +741,7 @@
             document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
             document.getElementById('rankingGastos').innerHTML = '';
             document.getElementById('analisesExtras').innerHTML = '';
+            document.getElementById('listaCustos').innerHTML = '';
             return;
         }
         
@@ -684,13 +752,48 @@
         atualizarHistorico();
         atualizarTabelaManutencao();
         atualizarAlertasManutencoes();
+        atualizarListaCustos();
         atualizarDemonstrativoCustos();
         atualizarResumoFinanceiro();
         atualizarComparativoVeiculos();
         atualizarRankingGastos();
-        carregarCustosNoForm();
         atualizarGraficos();
         atualizarAnalisesExtras();
+    }
+    
+    function atualizarListaCustos() {
+        const custos = getDadosVeiculo().custos;
+        const container = document.getElementById('listaCustos');
+        
+        if (custos.length === 0) {
+            container.innerHTML = '<div class="info-box">Nenhum custo cadastrado. Clique em "+ Adicionar Custo" para começar.</div>';
+            return;
+        }
+        
+        container.innerHTML = `
+            <table style="width:100%">
+                <thead>
+                    <tr><th>Nome</th><th>Valor</th><th>Periodicidade</th><th>Parcelas</th><th>Valor Mensal</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    ${custos.map(c => {
+                        let valorMensal = c.valor;
+                        if (c.periodo === 'anual') valorMensal = c.valor / 12;
+                        valorMensal = valorMensal / (c.parcelas || 1);
+                        return `
+                            <tr>
+                                <td>${c.nome}</td>
+                                <td>R$ ${c.valor.toFixed(2)}</td>
+                                <td>${c.periodo === 'anual' ? 'Anual' : 'Mensal'}</td>
+                                <td>${c.parcelas}x</td>
+                                <td>R$ ${valorMensal.toFixed(2)}</td>
+                                <td><button onclick="removerCusto('${c.id}')" style="background:#dc3545; padding:5px 10px; width:auto;">🗑️</button></td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+        `;
     }
     
     function atualizarDashboard() {
@@ -730,7 +833,11 @@
         const dados = getDadosVeiculo();
         const totalCombustivel = dados.abastecimentos.reduce((s, a) => s + a.valorTotal, 0);
         const totalManutencao = dados.manutencoes.reduce((s, m) => s + m.valor, 0);
-        const totalFixos = calcularCustoMensalFixos() * 12;
+        const totalFixos = dados.custos.reduce((s, c) => {
+            let valorAnual = c.valor;
+            if (c.periodo === 'mensal') valorAnual = c.valor * 12;
+            return s + valorAnual;
+        }, 0);
         
         const categorias = [
             { nome: 'Combustível', valor: totalCombustivel, cor: '#006699' },
@@ -820,23 +927,29 @@
     
     function atualizarDemonstrativoCustos() {
         const custos = getDadosVeiculo().custos;
-        const ipvaMensal = custos.ipva?.valor ? (custos.ipva.valor / (custos.ipva.parcelas || 1)) / (12 / (custos.ipva.parcelas || 1)) : 0;
-        const seguroMensal = custos.seguro?.valor ? (custos.seguro.periodo === 'anual' ? custos.seguro.valor / 12 : custos.seguro.valor) : 0;
         
-        document.getElementById('demonstrativoCustos').innerHTML = `
-            <div class="table-container"><table style="min-width:300px">
-                <thead><tr><th>Item</th><th>Valor Anual</th><th>Valor Mensal</th></tr></thead>
-                <tbody>
-                    <tr><td>IPVA</td><td>R$ ${(custos.ipva?.valor || 0).toFixed(2)}</td><td>R$ ${ipvaMensal.toFixed(2)}</td></tr>
-                    <tr><td>Seguro</td><td>R$ ${custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0).toFixed(2) : ((custos.seguro?.valor || 0) * 12).toFixed(2)}</td><td>R$ ${seguroMensal.toFixed(2)}</td></tr>
-                    <tr><td>Licenciamento</td><td>R$ ${(custos.licenciamento || 0).toFixed(2)}</td><td>R$ ${((custos.licenciamento || 0) / 12).toFixed(2)}</td></tr>
-                    <tr><td>Parcela Carro</td><td>R$ ${((custos.parcela || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.parcela || 0).toFixed(2)}</td></tr>
-                    <tr><td>Estacionamento</td><td>R$ ${((custos.estacionamento || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.estacionamento || 0).toFixed(2)}</td></tr>
-                    <tr><td>Lavagem</td><td>R$ ${((custos.lavagem || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.lavagem || 0).toFixed(2)}</td></tr>
-                    <tr style="background:#f0f0f0; font-weight:bold;"><td>TOTAL</td><td>R$ ${((custos.ipva?.valor || 0) + (custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0) : (custos.seguro?.valor || 0)*12) + (custos.licenciamento || 0) + ((custos.parcela || 0)*12) + ((custos.estacionamento || 0)*12) + ((custos.lavagem || 0)*12) + ((custos.outros || 0)*12)).toFixed(2)}</td><td>R$ ${calcularCustoMensalFixos().toFixed(2)}</td></tr>
-                </tbody>
-            </table></div>
-        `;
+        if (custos.length === 0) {
+            document.getElementById('demonstrativoCustos').innerHTML = '<div class="info-box">Nenhum custo cadastrado.</div>';
+            return;
+        }
+        
+        let html = '<div class="table-container"><table style="min-width:300px"><thead><tr><th>Item</th><th>Valor</th><th>Periodicidade</th><th>Parcelas</th><th>Valor Mensal</th></tr></thead><tbody>';
+        
+        custos.forEach(c => {
+            let valorMensal = c.valor;
+            if (c.periodo === 'anual') valorMensal = c.valor / 12;
+            valorMensal = valorMensal / (c.parcelas || 1);
+            html += `<tr>
+                <td>${c.nome}</td>
+                <td>R$ ${c.valor.toFixed(2)}</td>
+                <td>${c.periodo === 'anual' ? 'Anual' : 'Mensal'}</td>
+                <td>${c.parcelas}x</td>
+                <td>R$ ${valorMensal.toFixed(2)}</td>
+            </tr>`;
+        });
+        
+        html += '</tbody></table></div>';
+        document.getElementById('demonstrativoCustos').innerHTML = html;
     }
     
     function atualizarResumoFinanceiro() {
@@ -846,7 +959,7 @@
         const totalManutencao = getDadosVeiculo().manutencoes.reduce((sum, m) => sum + m.valor, 0);
         const totalKMRodados = comConsumo.reduce((sum, d) => sum + d.kmRodados, 0);
         const custoVariavelPorKM = totalKMRodados > 0 ? (totalCombustivel + totalManutencao) / totalKMRodados : 0;
-        const custoMensalFixo = calcularCustoMensalFixos();
+        const custoMensalFixo = calcularCustoMensalTotal();
         const meses = comConsumo.length > 0 ? Math.max(1, comConsumo.length / 2) : 1;
         const kmPorMes = totalKMRodados / meses;
         const custoFixoPorKM = kmPorMes > 0 ? custoMensalFixo / kmPorMes : 0;
@@ -922,19 +1035,6 @@
         document.getElementById('analisesExtras').innerHTML = analises;
     }
     
-    function carregarCustosNoForm() {
-        const custos = getDadosVeiculo().custos;
-        document.getElementById('ipvaValor').value = custos.ipva?.valor || '';
-        document.getElementById('ipvaParcelas').value = custos.ipva?.parcelas || 1;
-        document.getElementById('seguroValor').value = custos.seguro?.valor || '';
-        document.getElementById('seguroPeriodo').value = custos.seguro?.periodo || 'anual';
-        document.getElementById('licenciamentoValor').value = custos.licenciamento || '';
-        document.getElementById('parcelaValor').value = custos.parcela || '';
-        document.getElementById('estacionamentoValor').value = custos.estacionamento || '';
-        document.getElementById('lavagemValor').value = custos.lavagem || '';
-        document.getElementById('outrosValor').value = custos.outros || '';
-    }
-    
     let consumoChart, comparativoChart, custosChart;
     
     function atualizarGraficos() {
@@ -952,7 +1052,7 @@
         const ctx2 = document.getElementById('comparativoChart').getContext('2d');
         comparativoChart = new Chart(ctx2, {type:'bar', data:{labels:['Gasolina','Etanol'], datasets:[{label:'Consumo Médio (km/L)', data:[gasCons.reduce((a,b)=>a+b,0)/gasCons.length||0, etaCons.reduce((a,b)=>a+b,0)/etaCons.length||0], backgroundColor:['#006699','#28a745']}]}});
         
-        const custos = { combustivel: comConsumo.reduce((s,d)=>s+d.valorTotal,0), manutencao: getDadosVeiculo().manutencoes.reduce((s,m)=>s+m.valor,0), fixos: calcularCustoMensalFixos() * 3 };
+        const custos = { combustivel: comConsumo.reduce((s,d)=>s+d.valorTotal,0), manutencao: getDadosVeiculo().manutencoes.reduce((s,m)=>s+m.valor,0), fixos: calcularCustoMensalTotal() * 3 };
         if(custosChart) custosChart.destroy();
         const ctx3 = document.getElementById('custosChart').getContext('2d');
         custosChart = new Chart(ctx3, {type:'doughnut', data:{labels:['Combustível', 'Manutenção', 'Custos Fixos'], datasets:[{data:[custos.combustivel, custos.manutencao, custos.fixos], backgroundColor:['#006699','#28a745','#ff8c00']}]}});
@@ -990,6 +1090,18 @@
         document.getElementById('novoVeiculoNome').value = '';
         document.getElementById('novoVeiculoPlaca').value = '';
         document.getElementById('novoVeiculoAno').value = '';
+    }
+    
+    function abrirModalCusto() {
+        document.getElementById('modalCusto').style.display = 'flex';
+        document.getElementById('custoNome').value = '';
+        document.getElementById('custoValor').value = '';
+        document.getElementById('custoPeriodo').value = 'mensal';
+        document.getElementById('custoParcelas').value = '1';
+    }
+    
+    function fecharModalCusto() {
+        document.getElementById('modalCusto').style.display = 'none';
     }
     
     function calcularLitrosOuValor() {
