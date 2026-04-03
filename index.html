@@ -2,142 +2,166 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Gestão de Frotas - Multi Veículos</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #006699 0%, #0099cc 100%);
+            padding: 12px;
             min-height: 100vh;
         }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         .card {
             background: white;
             border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
-        .card:hover { transform: translateY(-5px); }
-        h1 { color: #667eea; margin-bottom: 10px; }
-        h2 { color: #764ba2; margin-bottom: 20px; border-left: 4px solid #667eea; padding-left: 15px; }
+        .card:hover { transform: translateY(-2px); }
+        h1 { color: #ffffff; margin-bottom: 5px; font-size: 1.6rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        h2 { color: #006699; margin-bottom: 15px; border-left: 4px solid #006699; padding-left: 12px; font-size: 1.3rem; }
+        h3 { color: #333; margin: 15px 0 10px 0; font-size: 1.1rem; }
         
+        /* Abas - melhorado para mobile */
         .tab-buttons {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
         }
         .tab-btn {
             background: rgba(255,255,255,0.2);
             color: white;
-            border: 2px solid white;
-            padding: 12px 24px;
-            border-radius: 10px;
+            border: 1px solid white;
+            padding: 10px 18px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
             transition: all 0.3s;
         }
-        .tab-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        .tab-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
         .tab-btn.active {
             background: white;
-            color: #667eea;
+            color: #006699;
             border-color: white;
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
+        /* Formulários */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
             margin-bottom: 20px;
         }
         .form-group { display: flex; flex-direction: column; }
-        label { font-weight: 600; margin-bottom: 5px; color: #555; font-size: 0.9em; }
+        label { font-weight: 600; margin-bottom: 5px; color: #555; font-size: 0.85rem; }
         input, select {
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background: #fafafa;
         }
-        input:focus, select:focus { outline: none; border-color: #667eea; }
+        input:focus, select:focus { outline: none; border-color: #006699; background: white; }
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #006699 0%, #0099cc 100%);
             color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            font-size: 16px;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: opacity 0.3s;
+            width: 100%;
+            max-width: 300px;
         }
         button:hover { opacity: 0.9; }
         
+        /* Dashboard */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 20px;
         }
         .metric-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #006699 0%, #0099cc 100%);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: 16px;
+            border-radius: 16px;
             text-align: center;
         }
-        .metric-value { font-size: 2em; font-weight: bold; margin: 10px 0; }
+        .metric-value { font-size: 1.8rem; font-weight: bold; margin: 8px 0; }
+        .metric-label { font-size: 0.85rem; opacity: 0.9; }
+        
         .custo-total-card {
             background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 16px;
             margin-bottom: 20px;
             text-align: center;
         }
-        .alert { padding: 15px; border-radius: 10px; margin-top: 15px; font-weight: 600; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
         
-        .table-container { overflow-x: auto; margin-top: 15px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        /* Alertas */
+        .alert { padding: 12px; border-radius: 12px; margin-top: 15px; font-weight: 600; font-size: 0.9rem; }
+        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .alert-warning { background: #fff3cd; color: #856404; border-left: 4px solid #ffc107; }
+        .alert-danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+        
+        /* Tabelas - responsivas */
+        .table-container { overflow-x: auto; margin-top: 15px; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #e0e0e0; font-size: 0.85rem; }
         th { background: #f5f5f5; font-weight: 600; color: #555; }
-        .chart-container { margin-top: 20px; height: 300px; }
-        .small-text { font-size: 0.85em; color: #666; margin-top: 5px; }
+        
+        /* Gráficos */
+        .chart-container { margin-top: 20px; height: 250px; position: relative; }
+        
         .info-box {
-            background: #e7f3ff;
-            border-left: 4px solid #667eea;
-            padding: 15px;
+            background: #e6f3ff;
+            border-left: 4px solid #006699;
+            padding: 12px;
             margin-bottom: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
         }
+        
+        /* Cards de manutenção */
         .manutencao-card {
             background: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
             border-left: 4px solid;
         }
         .manutencao-ok { border-left-color: #28a745; }
         .manutencao-warning { border-left-color: #ffc107; background: #fff3cd; }
         .manutencao-danger { border-left-color: #dc3545; background: #f8d7da; }
         
+        /* Seletor de veículos */
         .veiculo-selector {
-            background: rgba(255,255,255,0.95);
-            padding: 15px;
-            border-radius: 15px;
+            background: white;
+            padding: 12px;
+            border-radius: 16px;
             margin-bottom: 20px;
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
@@ -145,22 +169,56 @@
             background: #e0e0e0;
             color: #333;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 0.85rem;
+            width: auto;
         }
-        .veiculo-btn:hover { background: #ccc; }
         .veiculo-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #006699;
             color: white;
         }
         
+        /* Badges e indicadores */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .badge-success { background: #28a745; color: white; }
+        .badge-warning { background: #ffc107; color: #333; }
+        .badge-danger { background: #dc3545; color: white; }
+        .badge-info { background: #17a2b8; color: white; }
+        
+        .comparativo-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        /* Responsivo para celular */
         @media (max-width: 768px) {
             body { padding: 10px; }
             .card { padding: 15px; }
-            .metric-value { font-size: 1.5em; }
-            .tab-btn { padding: 8px 16px; font-size: 12px; }
+            .metric-value { font-size: 1.4rem; }
+            .metric-card { padding: 12px; }
+            .tab-btn { padding: 8px 14px; font-size: 0.75rem; }
+            h1 { font-size: 1.3rem; }
+            h2 { font-size: 1.1rem; }
+            button { font-size: 14px; padding: 10px 20px; }
+            .chart-container { height: 200px; }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .veiculo-selector { flex-direction: column; align-items: stretch; }
+            #listaVeiculos { justify-content: center; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -168,37 +226,66 @@
 <body>
 <div class="container">
     <h1>🚗 Gestão de Frotas</h1>
-    <p style="color: white; margin-bottom: 20px;">Sistema multi-veículos com sincronização na nuvem (Google Sheets)</p>
+    <p style="color: white; margin-bottom: 15px; font-size: 0.85rem;">Sistema multi-veículos com sincronização na nuvem</p>
 
     <!-- Seletor de Veículos -->
     <div class="veiculo-selector" id="veiculoSelector">
-        <strong>📌 Veículo atual:</strong>
-        <div id="listaVeiculos" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-        <button class="veiculo-btn" onclick="abrirModalVeiculo()">➕ Novo Veículo</button>
+        <strong>📌 Veículo:</strong>
+        <div id="listaVeiculos" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+        <button class="veiculo-btn" onclick="abrirModalVeiculo()" style="background:#006699; color:white;">➕ Novo</button>
     </div>
 
+    <!-- Abas - Dashboard será a primeira (active) -->
     <div class="tab-buttons">
-        <button class="tab-btn active" onclick="abrirTab('abastecimento')">⛽ Abastecimento</button>
-        <button class="tab-btn" onclick="abrirTab('manutencao')">🔧 Manutenção</button>
-        <button class="tab-btn" onclick="abrirTab('custos')">💰 Custos Fixos</button>
         <button class="tab-btn" onclick="abrirTab('dashboard')">📊 Dashboard</button>
+        <button class="tab-btn" onclick="abrirTab('abastecimento')">⛽ Abastecer</button>
+        <button class="tab-btn" onclick="abrirTab('manutencao')">🔧 Manutenção</button>
+        <button class="tab-btn" onclick="abrirTab('custos')">💰 Custos</button>
         <button class="tab-btn" onclick="abrirTab('relatorios')">📑 Relatórios</button>
     </div>
 
+    <!-- ==================== DASHBOARD (PRIMEIRA ABA) ==================== -->
+    <div id="tab-dashboard" class="tab-content active">
+        <div class="card">
+            <h2>📊 Dashboard do Veículo</h2>
+            <div class="dashboard-grid" id="dashboard"></div>
+            <div id="alertaContainer"></div>
+            <div id="recomendacao" class="alert alert-info"></div>
+        </div>
+        
+        <div class="card">
+            <h2>📈 Evolução do Consumo</h2>
+            <div class="chart-container"><canvas id="consumoChart"></canvas></div>
+        </div>
+        
+        <div class="card">
+            <h2>⛽ Gasolina vs Etanol</h2>
+            <div class="chart-container"><canvas id="comparativoChart"></canvas></div>
+        </div>
+        
+        <div class="card">
+            <h2>💰 Distribuição de Gastos</h2>
+            <div class="chart-container"><canvas id="custosChart"></canvas></div>
+        </div>
+        
+        <div class="card">
+            <h2>📊 Análises e Métricas</h2>
+            <div id="analisesExtras" class="info-box"></div>
+        </div>
+    </div>
+
     <!-- ==================== ABA 1: ABASTECIMENTO ==================== -->
-    <div id="tab-abastecimento" class="tab-content active">
+    <div id="tab-abastecimento" class="tab-content">
         <div class="card">
             <h2>⛽ Novo Abastecimento</h2>
             <div class="info-box">
-                💡 <strong>Como funciona:</strong><br>
-                • No momento do abastecimento, informe o <strong>KM Atual</strong><br>
-                • Você pode informar <strong>Litros</strong> OU <strong>Valor Total</strong> (o outro será calculado)
+                💡 Informe o <strong>KM Atual</strong> + <strong>Litros</strong> ou <strong>Valor Total</strong>
             </div>
             <div class="form-grid">
                 <div class="form-group"><label>📅 Data</label><input type="date" id="data" required></div>
                 <div class="form-group"><label>⛽ Combustível</label><select id="combustivel"><option>Etanol</option><option>Gasolina</option></select></div>
                 <div class="form-group"><label>🏪 Posto</label><input type="text" id="posto" placeholder="Ex: Shell" required></div>
-                <div class="form-group"><label>💰 Preço por Litro (R$)</label><input type="number" id="preco" step="0.01" required></div>
+                <div class="form-group"><label>💰 Preço/Litro (R$)</label><input type="number" id="preco" step="0.01" required></div>
                 <div class="form-group"><label>⛽ Litros</label><input type="number" id="litros" step="0.001" placeholder="Ou deixe em branco"></div>
                 <div class="form-group"><label>💵 Valor Total (R$)</label><input type="number" id="valorTotal" step="0.01" placeholder="Ou deixe em branco"></div>
                 <div class="form-group"><label>📊 KM Atual</label><input type="number" id="kmAtual" required placeholder="KM do hodômetro"></div>
@@ -253,15 +340,12 @@
     <!-- ==================== ABA 3: CUSTOS FIXOS ==================== -->
     <div id="tab-custos" class="tab-content">
         <div class="card">
-            <h2>💰 Custos Fixos - Configuração Inteligente</h2>
+            <h2>💰 Custos Fixos - Configuração</h2>
             <div class="info-box">
-                💡 <strong>Como funciona:</strong><br>
-                • Informe o valor TOTAL do custo e a periodicidade (Anual/Mensal)<br>
-                • Para IPVA, informe se paga à vista ou parcelado (1x a 8x)<br>
-                • O sistema calcula automaticamente o custo mensal efetivo
+                💡 Informe o valor TOTAL do custo. IPVA pode ser parcelado.
             </div>
             <div class="form-grid">
-                <div class="form-group"><label>IPVA (R$)</label><input type="number" id="ipvaValor" step="0.01" placeholder="Valor total do IPVA"></div>
+                <div class="form-group"><label>IPVA (R$)</label><input type="number" id="ipvaValor" step="0.01" placeholder="Valor total"></div>
                 <div class="form-group"><label>Pagamento IPVA</label>
                     <select id="ipvaParcelas">
                         <option value="1">À vista (1x)</option><option value="2">2x</option><option value="3">3x</option>
@@ -269,58 +353,37 @@
                         <option value="7">7x</option><option value="8">8x</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Seguro (R$)</label><input type="number" id="seguroValor" step="0.01" placeholder="Valor do seguro"></div>
-                <div class="form-group"><label>Periodicidade Seguro</label>
+                <div class="form-group"><label>Seguro (R$)</label><input type="number" id="seguroValor" step="0.01" placeholder="Valor"></div>
+                <div class="form-group"><label>Periodicidade</label>
                     <select id="seguroPeriodo"><option value="anual">Anual</option><option value="mensal">Mensal</option></select>
                 </div>
                 <div class="form-group"><label>Licenciamento (R$/ano)</label><input type="number" id="licenciamentoValor" step="0.01"></div>
                 <div class="form-group"><label>Parcela do Carro (R$/mês)</label><input type="number" id="parcelaValor" step="0.01"></div>
                 <div class="form-group"><label>Estacionamento (R$/mês)</label><input type="number" id="estacionamentoValor" step="0.01"></div>
                 <div class="form-group"><label>Lavagem (R$/mês)</label><input type="number" id="lavagemValor" step="0.01"></div>
-                <div class="form-group"><label>Outros Custos (R$/mês)</label><input type="number" id="outrosValor" step="0.01"></div>
+                <div class="form-group"><label>Outros (R$/mês)</label><input type="number" id="outrosValor" step="0.01"></div>
             </div>
-            <button onclick="salvarCustosFixos()">💾 Salvar Configuração</button>
+            <button onclick="salvarCustosFixos()">💾 Salvar</button>
         </div>
 
         <div class="card">
-            <h2>📊 Demonstrativo de Custos Fixos</h2>
+            <h2>📊 Demonstrativo de Custos</h2>
             <div id="demonstrativoCustos"></div>
         </div>
 
         <div class="card">
-            <h2>💰 Resumo Financeiro Total</h2>
+            <h2>💰 Resumo Financeiro</h2>
             <div class="custo-total-card" id="resumoFinanceiro">
-                <div style="font-size: 1.2em;">Custo Total Mensal</div>
+                <div style="font-size: 1rem;">Custo Total Mensal</div>
                 <div class="metric-value" id="custoMensalTotal">R$ 0</div>
-                <div style="font-size: 1.2em;">Custo por KM (Total)</div>
+                <div style="font-size: 1rem;">Custo por KM</div>
                 <div class="metric-value" id="custoPorKmTotal">R$ 0</div>
                 <div id="detalheCustos" class="small-text"></div>
             </div>
         </div>
     </div>
 
-    <!-- ==================== ABA 4: DASHBOARD ==================== -->
-    <div id="tab-dashboard" class="tab-content">
-        <div class="card">
-            <h2>📊 Dashboard do Veículo</h2>
-            <div class="dashboard-grid" id="dashboard"></div>
-            <div id="alertaContainer"></div>
-            <div id="recomendacao" class="alert"></div>
-        </div>
-        
-        <div class="card">
-            <h2>📈 Gráficos de Consumo</h2>
-            <div class="chart-container"><canvas id="consumoChart"></canvas></div>
-            <div class="chart-container" style="margin-top:30px"><canvas id="comparativoChart"></canvas></div>
-        </div>
-        
-        <div class="card">
-            <h2>💰 Gráfico de Custos</h2>
-            <div class="chart-container"><canvas id="custosChart"></canvas></div>
-        </div>
-    </div>
-
-    <!-- ==================== ABA 5: RELATÓRIOS ==================== -->
+    <!-- ==================== ABA 4: RELATÓRIOS ==================== -->
     <div id="tab-relatorios" class="tab-content">
         <div class="card">
             <h2>📑 Comparativo entre Veículos</h2>
@@ -328,28 +391,28 @@
         </div>
         
         <div class="card">
-            <h2>💰 Ranking de Custo por KM</h2>
-            <div class="table-container"><table id="tabelaRanking"><thead><tr><th>Veículo</th><th>Custo Total/km</th><th>Consumo Médio</th><th>Total Gasto</th></tr></thead><tbody></tbody></table></div>
+            <h2>💰 Ranking de Custos</h2>
+            <div class="table-container"><table id="tabelaRanking"><thead><tr><th>Veículo</th><th>Custo/km</th><th>Consumo Médio</th><th>Total Gasto</th></tr></thead><tbody></tbody></table></div>
         </div>
     </div>
 </div>
 
 <!-- Modal para cadastrar veículo -->
 <div id="modalVeiculo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-    <div style="background:white; padding:30px; border-radius:20px; max-width:400px; margin:20px;">
-        <h3>➕ Novo Veículo</h3>
-        <div class="form-group"><label>Nome/Modelo</label><input type="text" id="novoVeiculoNome" placeholder="Ex: Nissan Sentra, Onix, etc"></div>
-        <div class="form-group"><label>Placa (opcional)</label><input type="text" id="novoVeiculoPlaca" placeholder="ABC-1234"></div>
+    <div style="background:white; padding:25px; border-radius:20px; max-width:350px; margin:20px;">
+        <h3 style="color:#006699;">➕ Novo Veículo</h3>
+        <div class="form-group"><label>Nome/Modelo</label><input type="text" id="novoVeiculoNome" placeholder="Ex: Nissan Sentra"></div>
+        <div class="form-group"><label>Placa</label><input type="text" id="novoVeiculoPlaca" placeholder="ABC-1234"></div>
         <div class="form-group"><label>Ano</label><input type="number" id="novoVeiculoAno" placeholder="2018"></div>
         <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="salvarNovoVeiculo()">Salvar</button>
-            <button onclick="fecharModalVeiculo()">Cancelar</button>
+            <button onclick="salvarNovoVeiculo()" style="flex:1;">Salvar</button>
+            <button onclick="fecharModalVeiculo()" style="flex:1; background:#ccc;">Cancelar</button>
         </div>
     </div>
 </div>
 
 <script>
-    // CONFIGURAÇÃO - USE SEU NOVO URL AQUI
+    // CONFIGURAÇÃO
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkri0v97EHHVvVqJBtpeYRjlI3Na2BfC02l-EZLqJ-auFSOnZKyFCwfN7Y26u-r-FKyg/exec';
     
     // DADOS GLOBAIS
@@ -371,7 +434,7 @@
         pneus: { km: 40000, meses: 36, nome: 'Pneus' }
     };
     
-    // ========== FUNÇÕES DE CARREGAMENTO DE DADOS ==========
+    // ========== FUNÇÕES DE CARREGAMENTO ==========
     async function carregarTodosDados() {
         try {
             const response = await fetch(`${SCRIPT_URL}?action=getAll`);
@@ -383,7 +446,6 @@
                 custosFixos = data.custos || {};
                 
                 if (veiculos.length === 0) {
-                    // Criar veículo padrão
                     const defaultId = Date.now().toString();
                     veiculos = [{ id: defaultId, nome: 'Nissan Sentra 2018', placa: '', ano: 2018 }];
                     await fetch(`${SCRIPT_URL}?action=addVeiculo`, {
@@ -401,8 +463,7 @@
                 atualizarTudo();
             }
         } catch (error) {
-            console.error('Erro ao carregar dados:', error);
-            alert('Erro ao conectar com Google Sheets. Verifique sua internet.');
+            console.error('Erro:', error);
         }
     }
     
@@ -441,7 +502,7 @@
             limparFormularioAbastecimento();
             await carregarTodosDados();
         } catch (error) {
-            alert('Erro ao salvar. Tente novamente.');
+            alert('Erro ao salvar.');
         }
     }
     
@@ -476,7 +537,7 @@
             document.getElementById('obsManut').value = '';
             await carregarTodosDados();
         } catch (error) {
-            alert('Erro ao salvar. Tente novamente.');
+            alert('Erro ao salvar.');
         }
     }
     
@@ -501,7 +562,7 @@
             alert('✅ Custos fixos salvos!');
             await carregarTodosDados();
         } catch (error) {
-            alert('Erro ao salvar. Tente novamente.');
+            alert('Erro ao salvar.');
         }
     }
     
@@ -529,7 +590,7 @@
             atualizarSeletorVeiculos();
             atualizarTudo();
         } catch (error) {
-            alert('Erro ao salvar. Tente novamente.');
+            alert('Erro ao salvar.');
         }
     }
     
@@ -548,10 +609,8 @@
     function calcularCustoMensalFixos() {
         const custos = getDadosVeiculo().custos;
         let total = 0;
-        
         const ipvaMensal = custos.ipva?.valor ? (custos.ipva.valor / (custos.ipva.parcelas || 1)) / (12 / (custos.ipva.parcelas || 1)) : 0;
         total += ipvaMensal;
-        
         let seguroMensal = 0;
         if (custos.seguro?.valor) {
             seguroMensal = custos.seguro.periodo === 'anual' ? custos.seguro.valor / 12 : custos.seguro.valor;
@@ -562,7 +621,6 @@
         total += (custos.estacionamento || 0);
         total += (custos.lavagem || 0);
         total += (custos.outros || 0);
-        
         return total;
     }
     
@@ -603,11 +661,15 @@
             consumoGasolina: (cGas.reduce((a,b)=>a+b,0)/cGas.length || 0).toFixed(1),
             consumoEtanol: (cEta.reduce((a,b)=>a+b,0)/cEta.length || 0).toFixed(1),
             custoGasolina: (custoGas.reduce((a,b)=>a+b,0)/custoGas.length || 0).toFixed(2),
-            custoEtanol: (custoEta.reduce((a,b)=>a+b,0)/custoEta.length || 0).toFixed(2)
+            custoEtanol: (custoEta.reduce((a,b)=>a+b,0)/custoEta.length || 0).toFixed(2),
+            totalAbastecimentos: comConsumo.length,
+            ultimoConsumo: comConsumo[comConsumo.length-1]?.consumo || 0,
+            melhorConsumo: Math.max(...comConsumo.map(c=>c.consumo)) || 0,
+            piorConsumo: Math.min(...comConsumo.map(c=>c.consumo)) || 0
         };
     }
     
-    // ========== FUNÇÕES DE ATUALIZAÇÃO DA TELA ==========
+    // ========== FUNÇÕES DE ATUALIZAÇÃO ==========
     function atualizarSeletorVeiculos() {
         const container = document.getElementById('listaVeiculos');
         container.innerHTML = veiculos.map(v => `
@@ -635,33 +697,73 @@
         atualizarResumoFinanceiro();
         atualizarComparativoVeiculos();
         carregarCustosNoForm();
-        if (document.getElementById('tab-dashboard').classList.contains('active')) atualizarGraficos();
+        atualizarGraficos();
+        atualizarAnalisesExtras();
     }
     
     function atualizarDashboard() {
         let m = calcularMetricas();
         const veiculo = veiculos.find(v => v.id === veiculoAtualId);
         if(!m) {
-            document.getElementById('dashboard').innerHTML = `<div class="metric-card">${veiculo?.nome}: Aguardando 2 abastecimentos</div>`;
-            document.getElementById('recomendacao').innerHTML = 'Aguardando mais dados...';
+            document.getElementById('dashboard').innerHTML = `<div class="metric-card">${veiculo?.nome}<div class="metric-value">--</div><div class="metric-label">Aguardando 2 abastecimentos</div></div>`;
+            document.getElementById('recomendacao').innerHTML = '📌 Adicione pelo menos 2 abastecimentos para ver as análises';
             return;
         }
-        document.getElementById('dashboard').innerHTML = `
-            <div class="metric-card"><div>${veiculo?.nome}</div><div class="metric-value">${m.mediaGeral} km/L</div><small>Média geral</small></div>
-            <div class="metric-card"><div>💰 Custo médio/KM</div><div class="metric-value">R$ ${m.mediaCustoKM}</div></div>
-            <div class="metric-card"><div>⛽ Gasolina</div><div class="metric-value">${m.consumoGasolina} km/L</div><div>R$ ${m.custoGasolina}/km</div></div>
-            <div class="metric-card"><div>🌱 Etanol</div><div class="metric-value">${m.consumoEtanol} km/L</div><div>R$ ${m.custoEtanol}/km</div></div>`;
         
+        // Dashboard principal
+        document.getElementById('dashboard').innerHTML = `
+            <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${m.mediaGeral} km/L</div><div class="metric-label">Média de consumo</div></div>
+            <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${m.mediaCustoKM}</div><div class="metric-label">Média geral</div></div>
+            <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${m.consumoGasolina} km/L</div><div class="metric-label">R$ ${m.custoGasolina}/km</div></div>
+            <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${m.consumoEtanol} km/L</div><div class="metric-label">R$ ${m.custoEtanol}/km</div></div>
+            <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${m.melhorConsumo} km/L</div><div class="metric-label">Pior: ${m.piorConsumo} km/L</div></div>
+            <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${m.ultimoConsumo} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
+        `;
+        
+        // Alertas
         let alertas = [];
-        if(m.mediaGeral < 6) alertas.push({tipo:'danger', msg:'⚠️ Consumo baixo! Abaixo de 6 km/L'});
-        else if(m.mediaGeral < 7) alertas.push({tipo:'warning', msg:'🟡 Consumo médio (6-7 km/L) - Pode melhorar'});
-        else alertas.push({tipo:'success', msg:'🟢 OK - Consumo normal'});
+        if(m.mediaGeral < 6) alertas.push({tipo:'danger', msg:'⚠️ Consumo muito baixo! Verifique pneus e manutenção.'});
+        else if(m.mediaGeral < 7) alertas.push({tipo:'warning', msg:'🟡 Consumo abaixo do ideal para o Nissan Sentra CVT'});
+        else if(m.mediaGeral >= 9) alertas.push({tipo:'success', msg:'🌟 Excelente consumo! Você está dirigindo de forma eficiente!'});
+        else alertas.push({tipo:'success', msg:'🟢 Consumo dentro do esperado'});
+        
+        if(m.ultimoConsumo < m.mediaGeral * 0.85) alertas.push({tipo:'warning', msg:'🚨 Último consumo foi 15% menor que a média! Possível problema.'});
+        
         document.getElementById('alertaContainer').innerHTML = alertas.map(a=>`<div class="alert alert-${a.tipo}">${a.msg}</div>`).join('');
         
+        // Recomendação de combustível
         let melhor = parseFloat(m.custoGasolina) < parseFloat(m.custoEtanol) ? 
             '✅ Recomendação: Gasolina (custo por km menor)' : '✅ Recomendação: Etanol (custo por km menor)';
         document.getElementById('recomendacao').innerHTML = melhor;
-        document.getElementById('recomendacao').className = 'alert alert-success';
+    }
+    
+    function atualizarAnalisesExtras() {
+        const m = calcularMetricas();
+        if(!m) {
+            document.getElementById('analisesExtras').innerHTML = 'Adicione mais abastecimentos para análises detalhadas.';
+            return;
+        }
+        
+        const metaEtanol = 6.5;
+        const metaGasolina = 9.0;
+        const metaGeral = 7.5;
+        
+        let analises = '';
+        analises += `<strong>🎯 Metas de consumo para Nissan Sentra CVT:</strong><br>`;
+        analises += `• Etanol: ${metaEtanol} km/L ${m.consumoEtanol >= metaEtanol ? '✅' : '⚠️ Abaixo da meta'}<br>`;
+        analises += `• Gasolina: ${metaGasolina} km/L ${m.consumoGasolina >= metaGasolina ? '✅' : '⚠️ Abaixo da meta'}<br>`;
+        analises += `• Média geral: ${metaGeral} km/L ${m.mediaGeral >= metaGeral ? '✅' : '⚠️ Abaixo da meta'}<br><br>`;
+        
+        // Projeção de gastos
+        const gastoMedioMensal = parseFloat(document.getElementById('custoMensalTotal')?.innerText?.replace('R$ ', '') || 0);
+        if(gastoMedioMensal > 0) {
+            analises += `<strong>📊 Projeção anual:</strong><br>`;
+            analises += `• Gasto mensal médio: R$ ${gastoMedioMensal.toFixed(2)}<br>`;
+            analises += `• Projeção anual: R$ ${(gastoMedioMensal * 12).toFixed(2)}<br>`;
+            analises += `• Economia potencial com direção eficiente: até 20%<br>`;
+        }
+        
+        document.getElementById('analisesExtras').innerHTML = analises;
     }
     
     function atualizarHistorico() {
@@ -706,13 +808,14 @@
         for (const [tipoKey, config] of Object.entries(intervalosManutencao)) {
             const ultimaManut = manuts.filter(m => m.tipo === tipoKey).sort((a,b) => new Date(b.data) - new Date(a.data))[0];
             if (!ultimaManut) {
-                container.innerHTML += `<div class="manutencao-card manutencao-danger"><strong>⚠️ ${config.nome}</strong><br>Nunca foi registrada!</div>`;
+                container.innerHTML += `<div class="manutencao-card manutencao-danger"><strong>⚠️ ${config.nome}</strong><br>Nunca foi registrada! Programe a primeira troca.</div>`;
                 continue;
             }
             const kmRodado = ultimoKM - ultimaManut.km;
             const percentKM = Math.min(100, Math.round(kmRodado / config.km * 100));
             let status = percentKM >= 90 ? 'danger' : (percentKM >= 75 ? 'warning' : 'ok');
-            container.innerHTML += `<div class="manutencao-card manutencao-${status}"><strong>🔧 ${config.nome}</strong><br>Última: ${ultimaManut.data} (${ultimaManut.km.toLocaleString()} km)<br>${percentKM}% do intervalo (${kmRodado.toLocaleString()} km rodados)</div>`;
+            let mensagem = percentKM >= 90 ? '🔴 URGENTE! Troque imediatamente!' : (percentKM >= 75 ? '🟡 Próximo da troca' : '🟢 OK');
+            container.innerHTML += `<div class="manutencao-card manutencao-${status}"><strong>🔧 ${config.nome}</strong><br>Última: ${ultimaManut.data} (${ultimaManut.km.toLocaleString()} km)<br>${percentKM}% do intervalo - ${mensagem}</div>`;
         }
     }
     
@@ -722,18 +825,18 @@
         const seguroMensal = custos.seguro?.valor ? (custos.seguro.periodo === 'anual' ? custos.seguro.valor / 12 : custos.seguro.valor) : 0;
         
         document.getElementById('demonstrativoCustos').innerHTML = `
-            <table>
-                <thead><tr><th>Item</th><th>Valor Anual</th><th>Valor Mensal</th><th>Observação</th></tr></thead>
+            <div class="table-container"><table style="min-width:300px">
+                <thead><tr><th>Item</th><th>Valor Anual</th><th>Valor Mensal</th></tr></thead>
                 <tbody>
-                    <tr><td>IPVA</td><td>R$ ${(custos.ipva?.valor || 0).toFixed(2)}</td><td>R$ ${ipvaMensal.toFixed(2)}</td><td>${custos.ipva?.parcelas || 1}x no ano</td></tr>
-                    <tr><td>Seguro</td><td>R$ ${custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0).toFixed(2) : ((custos.seguro?.valor || 0) * 12).toFixed(2)}</td><td>R$ ${seguroMensal.toFixed(2)}</td><td>${custos.seguro?.periodo === 'anual' ? 'Pago anual' : 'Pago mensal'}</td></tr>
-                    <tr><td>Licenciamento</td><td>R$ ${(custos.licenciamento || 0).toFixed(2)}</td><td>R$ ${((custos.licenciamento || 0) / 12).toFixed(2)}</td><td>Taxa anual</td></tr>
-                    <tr><td>Parcela do Carro</td><td>R$ ${((custos.parcela || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.parcela || 0).toFixed(2)}</td><td>Financiamento</td></tr>
-                    <tr><td>Estacionamento</td><td>R$ ${((custos.estacionamento || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.estacionamento || 0).toFixed(2)}</td><td>Custo mensal</td></tr>
-                    <tr><td>Lavagem</td><td>R$ ${((custos.lavagem || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.lavagem || 0).toFixed(2)}</td><td>Custo mensal</td></tr>
-                    <tr style="background:#f0f0f0; font-weight:bold;"><td>TOTAL</td><td>R$ ${((custos.ipva?.valor || 0) + (custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0) : (custos.seguro?.valor || 0)*12) + (custos.licenciamento || 0) + ((custos.parcela || 0)*12) + ((custos.estacionamento || 0)*12) + ((custos.lavagem || 0)*12) + ((custos.outros || 0)*12)).toFixed(2)}</td><td>R$ ${calcularCustoMensalFixos().toFixed(2)}</td><td></td></tr>
+                    <tr><td>IPVA</td><td>R$ ${(custos.ipva?.valor || 0).toFixed(2)}</td><td>R$ ${ipvaMensal.toFixed(2)}</td></tr>
+                    <tr><td>Seguro</td><td>R$ ${custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0).toFixed(2) : ((custos.seguro?.valor || 0) * 12).toFixed(2)}</td><td>R$ ${seguroMensal.toFixed(2)}</td></tr>
+                    <tr><td>Licenciamento</td><td>R$ ${(custos.licenciamento || 0).toFixed(2)}</td><td>R$ ${((custos.licenciamento || 0) / 12).toFixed(2)}</td></tr>
+                    <tr><td>Parcela Carro</td><td>R$ ${((custos.parcela || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.parcela || 0).toFixed(2)}</td></tr>
+                    <tr><td>Estacionamento</td><td>R$ ${((custos.estacionamento || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.estacionamento || 0).toFixed(2)}</td></tr>
+                    <tr><td>Lavagem</td><td>R$ ${((custos.lavagem || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.lavagem || 0).toFixed(2)}</td></tr>
+                    <tr style="background:#f0f0f0; font-weight:bold;"><td>TOTAL</td><td>R$ ${((custos.ipva?.valor || 0) + (custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0) : (custos.seguro?.valor || 0)*12) + (custos.licenciamento || 0) + ((custos.parcela || 0)*12) + ((custos.estacionamento || 0)*12) + ((custos.lavagem || 0)*12) + ((custos.outros || 0)*12)).toFixed(2)}</td><td>R$ ${calcularCustoMensalFixos().toFixed(2)}</td></tr>
                 </tbody>
-            </table>
+            </table></div>
         `;
     }
     
@@ -751,7 +854,7 @@
         
         document.getElementById('custoMensalTotal').innerHTML = `R$ ${(custoMensalFixo + (totalCombustivel + totalManutencao) / meses).toFixed(2)}`;
         document.getElementById('custoPorKmTotal').innerHTML = `R$ ${(custoVariavelPorKM + custoFixoPorKM).toFixed(2)}`;
-        document.getElementById('detalheCustos').innerHTML = `⛽ Combustível: R$ ${totalCombustivel.toFixed(2)} | 🔧 Manutenção: R$ ${totalManutencao.toFixed(2)} | 🏠 Custos Fixos/mês: R$ ${custoMensalFixo.toFixed(2)}`;
+        document.getElementById('detalheCustos').innerHTML = `⛽ Combustível: R$ ${totalCombustivel.toFixed(2)} | 🔧 Manutenção: R$ ${totalManutencao.toFixed(2)} | 🏠 Fixos/mês: R$ ${custoMensalFixo.toFixed(2)}`;
     }
     
     function atualizarComparativoVeiculos() {
@@ -784,10 +887,10 @@
         });
         
         document.getElementById('comparativoVeiculos').innerHTML = ranking.map(v => `
-            <div class="metric-card" style="margin-bottom:10px;">
-                <div><strong>${v.nome}</strong></div>
-                <div>💰 Total gasto: R$ ${v.totalGasto.toFixed(2)}</div>
-                <div>📊 Consumo médio: ${v.consumoMedio || '-'} km/L</div>
+            <div class="comparativo-card">
+                <strong>${v.nome}</strong><br>
+                💰 Total gasto: R$ ${v.totalGasto.toFixed(2)}<br>
+                📊 Consumo médio: ${v.consumoMedio || '-'} km/L
             </div>
         `).join('');
     }
@@ -813,16 +916,19 @@
         let labels = comConsumo.map(d=>d.data);
         let consumos = comConsumo.map(d=>d.consumo);
         if(consumoChart) consumoChart.destroy();
-        consumoChart = new Chart(document.getElementById('consumoChart'), {type:'line', data:{labels, datasets:[{label:'Consumo (km/L)', data:consumos, borderColor:'#667eea', tension:0.3}]}});
+        const ctx1 = document.getElementById('consumoChart').getContext('2d');
+        consumoChart = new Chart(ctx1, {type:'line', data:{labels, datasets:[{label:'Consumo (km/L)', data:consumos, borderColor:'#006699', backgroundColor:'rgba(0,102,153,0.1)', tension:0.3}]}});
         
         let gasCons = comConsumo.filter(d=>d.combustivel==='Gasolina').map(d=>d.consumo);
         let etaCons = comConsumo.filter(d=>d.combustivel==='Etanol').map(d=>d.consumo);
         if(comparativoChart) comparativoChart.destroy();
-        comparativoChart = new Chart(document.getElementById('comparativoChart'), {type:'bar', data:{labels:['Gasolina','Etanol'], datasets:[{label:'Consumo Médio (km/L)', data:[gasCons.reduce((a,b)=>a+b,0)/gasCons.length||0, etaCons.reduce((a,b)=>a+b,0)/etaCons.length||0], backgroundColor:['#28a745','#ffc107']}]}});
+        const ctx2 = document.getElementById('comparativoChart').getContext('2d');
+        comparativoChart = new Chart(ctx2, {type:'bar', data:{labels:['Gasolina','Etanol'], datasets:[{label:'Consumo Médio (km/L)', data:[gasCons.reduce((a,b)=>a+b,0)/gasCons.length||0, etaCons.reduce((a,b)=>a+b,0)/etaCons.length||0], backgroundColor:['#006699','#0099cc']}]}});
         
         const custos = { combustivel: comConsumo.reduce((s,d)=>s+d.valorTotal,0), manutencao: getDadosVeiculo().manutencoes.reduce((s,m)=>s+m.valor,0), fixos: calcularCustoMensalFixos() * 3 };
         if(custosChart) custosChart.destroy();
-        custosChart = new Chart(document.getElementById('custosChart'), {type:'doughnut', data:{labels:['Combustível', 'Manutenção', 'Custos Fixos'], datasets:[{data:[custos.combustivel, custos.manutencao, custos.fixos], backgroundColor:['#667eea', '#764ba2', '#28a745']}]}});
+        const ctx3 = document.getElementById('custosChart').getContext('2d');
+        custosChart = new Chart(ctx3, {type:'doughnut', data:{labels:['Combustível', 'Manutenção', 'Custos Fixos'], datasets:[{data:[custos.combustivel, custos.manutencao, custos.fixos], backgroundColor:['#006699','#0099cc','#ff8c00']}]}});
     }
     
     // ========== FUNÇÕES AUXILIARES ==========
@@ -840,7 +946,10 @@
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${tabId}`).classList.add('active');
         event.target.classList.add('active');
-        if (tabId === 'dashboard') atualizarGraficos();
+        if (tabId === 'dashboard') {
+            atualizarGraficos();
+            atualizarAnalisesExtras();
+        }
         if (tabId === 'custos') atualizarDemonstrativoCustos();
         if (tabId === 'relatorios') atualizarComparativoVeiculos();
     }
@@ -869,6 +978,8 @@
     document.getElementById('preco').addEventListener('input', calcularLitrosOuValor);
     document.getElementById('litros').addEventListener('input', calcularLitrosOuValor);
     document.getElementById('valorTotal').addEventListener('input', calcularLitrosOuValor);
+    document.getElementById('data').valueAsDate = new Date();
+    document.getElementById('dataManut').valueAsDate = new Date();
     
     // INICIALIZAÇÃO
     carregarTodosDados();
