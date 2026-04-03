@@ -471,18 +471,30 @@
         return data.toLocaleDateString('pt-BR');
     }
     
+    // Função auxiliar para normalizar o periodo (aceita tanto "anual" quanto "Anual")
+    function normalizarPeriodo(periodo) {
+        if (!periodo) return 'mensal';
+        return periodo.toLowerCase();
+    }
+    
     async function carregarTodosDados() {
         try {
+            console.log('Carregando dados da API...');
             const response = await fetch(`${SCRIPT_URL}?action=getAll`);
             const data = await response.json();
+            console.log('Resposta da API:', data);
+            
             if (data.success) {
                 veiculos = data.veiculos || [];
                 dadosAbastecimentos = data.abastecimentos || [];
                 dadosManutencoes = data.manutencoes || [];
                 custosDinamicos = data.custosDinamicos || [];
                 
+                console.log('Custos carregados:', custosDinamicos.length);
+                
                 if (veiculos.length > 0 && !veiculoAtualId) {
                     veiculoAtualId = veiculos[0].id;
+                    console.log('Veículo atual selecionado:', veiculoAtualId);
                 }
                 
                 atualizarSeletorVeiculos();
@@ -492,9 +504,12 @@
                     document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
                     document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
                 }
+            } else {
+                console.error('Erro na API:', data.error);
+                alert('Erro ao carregar dados: ' + (data.error || 'Erro desconhecido'));
             }
         } catch (error) {
-            console.error('Erro:', error);
+            console.error('Erro de conexão:', error);
             alert('Erro ao conectar com Google Sheets. Verifique sua internet.');
         }
     }
@@ -591,7 +606,7 @@
             veiculoId: veiculoAtualId,
             nome: nome,
             valor: valor,
-            periodo: periodo,
+            periodo: periodo.toLowerCase(),
             parcelas: parcelas
         };
         
@@ -662,10 +677,10 @@
         let total = 0;
         custos.forEach(c => {
             let valorMensal = c.valor;
-            if (c.periodo === 'anual') {
+            const periodoNorm = normalizarPeriodo(c.periodo);
+            if (periodoNorm === 'anual') {
                 valorMensal = c.valor / 12;
             }
-            // Dividir pelo número de parcelas
             valorMensal = valorMensal / (c.parcelas || 1);
             total += valorMensal;
         });
@@ -778,14 +793,15 @@
                 <tbody>
                     ${custos.map(c => {
                         let valorMensal = c.valor;
-                        if (c.periodo === 'anual') valorMensal = c.valor / 12;
+                        const periodoNorm = normalizarPeriodo(c.periodo);
+                        if (periodoNorm === 'anual') valorMensal = c.valor / 12;
                         valorMensal = valorMensal / (c.parcelas || 1);
                         return `
                             <tr>
                                 <td>${c.nome}</td>
                                 <td>R$ ${c.valor.toFixed(2)}</td>
-                                <td>${c.periodo === 'anual' ? 'Anual' : 'Mensal'}</td>
-                                <td>${c.parcelas}x</td>
+                                <td>${periodoNorm === 'anual' ? 'Anual' : 'Mensal'}</td>
+                                <td>${c.parcelas || 1}x</td>
                                 <td>R$ ${valorMensal.toFixed(2)}</td>
                                 <td><button onclick="removerCusto('${c.id}')" style="background:#dc3545; padding:5px 10px; width:auto;">🗑️</button></td>
                             </tr>
@@ -835,7 +851,8 @@
         const totalManutencao = dados.manutencoes.reduce((s, m) => s + m.valor, 0);
         const totalFixos = dados.custos.reduce((s, c) => {
             let valorAnual = c.valor;
-            if (c.periodo === 'mensal') valorAnual = c.valor * 12;
+            const periodoNorm = normalizarPeriodo(c.periodo);
+            if (periodoNorm === 'mensal') valorAnual = c.valor * 12;
             return s + valorAnual;
         }, 0);
         
@@ -937,13 +954,14 @@
         
         custos.forEach(c => {
             let valorMensal = c.valor;
-            if (c.periodo === 'anual') valorMensal = c.valor / 12;
+            const periodoNorm = normalizarPeriodo(c.periodo);
+            if (periodoNorm === 'anual') valorMensal = c.valor / 12;
             valorMensal = valorMensal / (c.parcelas || 1);
             html += `<tr>
                 <td>${c.nome}</td>
                 <td>R$ ${c.valor.toFixed(2)}</td>
-                <td>${c.periodo === 'anual' ? 'Anual' : 'Mensal'}</td>
-                <td>${c.parcelas}x</td>
+                <td>${periodoNorm === 'anual' ? 'Anual' : 'Mensal'}</td>
+                <td>${c.parcelas || 1}x</td>
                 <td>R$ ${valorMensal.toFixed(2)}</td>
             </tr>`;
         });
