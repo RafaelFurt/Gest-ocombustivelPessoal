@@ -721,38 +721,38 @@
         atualizarAnalisesExtras();
     }
     
-    function atualizarDashboard() {
-        let m = calcularMetricas();
-        const veiculo = veiculos.find(v => v.id === veiculoAtualId);
-        if(!m) {
-            document.getElementById('dashboard').innerHTML = `<div class="metric-card">${veiculo?.nome}<div class="metric-value">--</div><div class="metric-label">Aguardando 2 abastecimentos</div></div>`;
-            document.getElementById('recomendacao').innerHTML = '📌 Adicione pelo menos 2 abastecimentos para ver as análises';
-            return;
-        }
-        
-        document.getElementById('dashboard').innerHTML = `
-            <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${formatarNumero(m.mediaGeral, 1)} km/L</div><div class="metric-label">Média de consumo</div></div>
-            <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${formatarNumero(m.mediaCustoKM, 2)}</div><div class="metric-label">Média geral</div></div>
-            <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${formatarNumero(m.consumoGasolina, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoGasolina, 2)}/km</div></div>
-            <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${formatarNumero(m.consumoEtanol, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoEtanol, 2)}/km</div></div>
-            <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${formatarNumero(m.melhorConsumo, 1)} km/L</div><div class="metric-label">Pior: ${formatarNumero(m.piorConsumo, 1)} km/L</div></div>
-            <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${formatarNumero(m.ultimoConsumo, 1)} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
-        `;
-        
-        let alertas = [];
-        if(m.mediaGeral < 6) alertas.push({tipo:'danger', msg:'⚠️ Consumo muito baixo! Verifique pneus e manutenção.'});
-        else if(m.mediaGeral < 7) alertas.push({tipo:'warning', msg:'🟡 Consumo abaixo do ideal para o Nissan Sentra CVT'});
-        else if(m.mediaGeral >= 9) alertas.push({tipo:'success', msg:'🌟 Excelente consumo! Você está dirigindo de forma eficiente!'});
-        else alertas.push({tipo:'success', msg:'🟢 Consumo dentro do esperado'});
-        
-        if(m.ultimoConsumo < m.mediaGeral * 0.85) alertas.push({tipo:'warning', msg:'🚨 Último consumo foi 15% menor que a média! Possível problema.'});
-        
-        document.getElementById('alertaContainer').innerHTML = alertas.map(a=>`<div class="alert alert-${a.tipo}">${a.msg}</div>`).join('');
-        
-        let melhor = m.custoGasolina < m.custoEtanol ? 
-            '✅ Recomendação: Gasolina (custo por km menor)' : '✅ Recomendação: Etanol (custo por km menor)';
-        document.getElementById('recomendacao').innerHTML = melhor;
+function atualizarDashboard() {
+    let m = calcularMetricas();
+    const veiculo = veiculos.find(v => v.id === veiculoAtualId);
+    if(!m) {
+        document.getElementById('dashboard').innerHTML = `<div class="metric-card">${veiculo?.nome}<div class="metric-value">--</div><div class="metric-label">Aguardando 2 abastecimentos</div></div>`;
+        document.getElementById('recomendacao').innerHTML = '📌 Adicione pelo menos 2 abastecimentos para ver as análises';
+        return;
     }
+    
+    document.getElementById('dashboard').innerHTML = `
+        <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${formatarNumero(m.mediaGeral, 1)} km/L</div><div class="metric-label">Média de consumo</div></div>
+        <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${formatarNumero(m.mediaCustoKM, 2)}</div><div class="metric-label">Média geral</div></div>
+        <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${formatarNumero(m.consumoGasolina, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoGasolina, 2)}/km</div></div>
+        <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${formatarNumero(m.consumoEtanol, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoEtanol, 2)}/km</div></div>
+        <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${formatarNumero(m.melhorConsumo, 1)} km/L</div><div class="metric-label">Pior: ${formatarNumero(m.piorConsumo, 1)} km/L</div></div>
+        <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${formatarNumero(m.ultimoConsumo, 1)} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
+    `;
+    
+    let alertas = [];
+    if(m.mediaGeral < 6) alertas.push({tipo:'danger', msg:'⚠️ Consumo muito baixo! Verifique pneus e manutenção.'});
+    else if(m.mediaGeral < 7) alertas.push({tipo:'warning', msg:'🟡 Consumo abaixo do ideal para o Nissan Sentra CVT'});
+    else if(m.mediaGeral >= 9) alertas.push({tipo:'success', msg:'🌟 Excelente consumo! Você está dirigindo de forma eficiente!'});
+    else alertas.push({tipo:'success', msg:'🟢 Consumo dentro do esperado'});
+    
+    if(m.ultimoConsumo < m.mediaGeral * 0.85) alertas.push({tipo:'warning', msg:'🚨 Último consumo foi 15% menor que a média! Possível problema.'});
+    
+    document.getElementById('alertaContainer').innerHTML = alertas.map(a=>`<div class="alert alert-${a.tipo}">${a.msg}</div>`).join('');
+    
+    let melhor = parseFloat(m.custoGasolina) < parseFloat(m.custoEtanol) ? 
+        '✅ Recomendação: Gasolina (custo por km menor)' : '✅ Recomendação: Etanol (custo por km menor)';
+    document.getElementById('recomendacao').innerHTML = melhor;
+}
     
     function atualizarRankingGastos() {
         const dados = getDadosVeiculo();
@@ -826,8 +826,8 @@
             row.insertCell(3).textContent = d.posto;
             row.insertCell(4).textContent = d.kmRodados ? d.kmRodados.toLocaleString('pt-BR') : '-';
             row.insertCell(5).textContent = d.litros ? formatarNumero(d.litros, 2) : '-';
-            row.insertCell(6).textContent = d.consumo ? formatarNumero(d.consumo, 1) : 'Aguardando';
-            row.insertCell(7).textContent = d.custoPorKM ? `R$ ${formatarNumero(d.custoPorKM, 2)}` : '-';
+	    row.insertCell(6).textContent = d.consumo ? formatarNumero(d.consumo, 1) : 'Aguardando';
+	    row.insertCell(7).textContent = d.custoPorKM ? `R$ ${formatarNumero(d.custoPorKM, 2)}` : '-';
         });
     }
     
@@ -936,10 +936,9 @@
         const metaGeral = 7.5;
         
         let analises = '';
-        analises += `<strong>🎯 Metas de consumo para Nissan Sentra CVT:</strong><br>`;
-        analises += `• Etanol: ${metaEtanol} km/L ${m.consumoEtanol >= metaEtanol ? '✅' : '⚠️ Abaixo da meta'}<br>`;
-        analises += `• Gasolina: ${metaGasolina} km/L ${m.consumoGasolina >= metaGasolina ? '✅' : '⚠️ Abaixo da meta'}<br>`;
-        analises += `• Média geral: ${metaGeral} km/L ${m.mediaGeral >= metaGeral ? '✅' : '⚠️ Abaixo da meta'}<br><br>`;
+	analises += `• Etanol: ${metaEtanol} km/L ${m.consumoEtanol >= metaEtanol ? '✅' : '⚠️ Abaixo da meta'}<br>`;
+	analises += `• Gasolina: ${metaGasolina} km/L ${m.consumoGasolina >= metaGasolina ? '✅' : '⚠️ Abaixo da meta'}<br>`;
+	analises += `• Média geral: ${metaGeral} km/L ${m.mediaGeral >= metaGeral ? '✅' : '⚠️ Abaixo da meta'}<br><br>`;
         
         const gastoMedioMensal = parseFloat(document.getElementById('custoMensalTotal')?.innerText?.replace('R$ ', '').replace(/\./g, '').replace(',', '.') || 0);
         if(gastoMedioMensal > 0) {
