@@ -263,14 +263,14 @@
     <div id="tab-abastecimento" class="tab-content">
         <div class="card">
             <h2>⛽ Novo Abastecimento</h2>
-            <div class="info-box">💡 Informe o <strong>KM Atual</strong> + <strong>Litros</strong> ou <strong>Valor Total</strong></div>
+            <div class="info-box">💡 Informe o <strong>KM Atual</strong> + <strong>Litros</strong> ou <strong>Valor Total</strong> (use vírgula para decimais, ex: 237,02)</div>
             <div class="form-grid">
                 <div class="form-group"><label>📅 Data</label><input type="date" id="data" required></div>
                 <div class="form-group"><label>⛽ Combustível</label><select id="combustivel"><option>Etanol</option><option>Gasolina</option></select></div>
                 <div class="form-group"><label>🏪 Posto</label><input type="text" id="posto" placeholder="Ex: Shell" required></div>
-                <div class="form-group"><label>💰 Preço/Litro (R$)</label><input type="number" id="preco" step="0.01" required></div>
-                <div class="form-group"><label>⛽ Litros</label><input type="number" id="litros" step="0.001" placeholder="Ou deixe em branco"></div>
-                <div class="form-group"><label>💵 Valor Total (R$)</label><input type="number" id="valorTotal" step="0.01" placeholder="Ou deixe em branco"></div>
+                <div class="form-group"><label>💰 Preço por Litro (R$)</label><input type="text" id="preco" step="any" placeholder="Ex: 6,79" required></div>
+                <div class="form-group"><label>⛽ Litros</label><input type="text" id="litros" step="any" placeholder="Ou deixe em branco"></div>
+                <div class="form-group"><label>💵 Valor Total (R$)</label><input type="text" id="valorTotal" step="any" placeholder="Ou deixe em branco"></div>
                 <div class="form-group"><label>📊 KM Atual</label><input type="number" id="kmAtual" required placeholder="KM do hodômetro"></div>
             </div>
             <button onclick="salvarAbastecimento()">💾 Salvar Abastecimento</button>
@@ -302,7 +302,7 @@
                     </select>
                 </div>
                 <div class="form-group"><label>KM Atual</label><input type="number" id="kmManut" required></div>
-                <div class="form-group"><label>Valor (R$)</label><input type="number" id="valorManut" step="0.01" required></div>
+                <div class="form-group"><label>Valor (R$)</label><input type="text" id="valorManut" step="any" placeholder="Ex: 320,00" required></div>
                 <div class="form-group"><label>Observação</label><input type="text" id="obsManut" placeholder="Opcional"></div>
             </div>
             <button onclick="salvarManutencao()">💾 Salvar Manutenção</button>
@@ -323,15 +323,15 @@
             <h2>💰 Custos Fixos - Configuração</h2>
             <div class="info-box">💡 Informe o valor TOTAL do custo. IPVA pode ser parcelado.</div>
             <div class="form-grid">
-                <div class="form-group"><label>IPVA (R$)</label><input type="number" id="ipvaValor" step="0.01" placeholder="Valor total"></div>
+                <div class="form-group"><label>IPVA (R$)</label><input type="text" id="ipvaValor" step="any" placeholder="Valor total"></div>
                 <div class="form-group"><label>Pagamento IPVA</label><select id="ipvaParcelas"><option value="1">À vista (1x)</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option></select></div>
-                <div class="form-group"><label>Seguro (R$)</label><input type="number" id="seguroValor" step="0.01" placeholder="Valor"></div>
+                <div class="form-group"><label>Seguro (R$)</label><input type="text" id="seguroValor" step="any" placeholder="Valor"></div>
                 <div class="form-group"><label>Periodicidade</label><select id="seguroPeriodo"><option value="anual">Anual</option><option value="mensal">Mensal</option></select></div>
-                <div class="form-group"><label>Licenciamento (R$/ano)</label><input type="number" id="licenciamentoValor" step="0.01"></div>
-                <div class="form-group"><label>Parcela do Carro (R$/mês)</label><input type="number" id="parcelaValor" step="0.01"></div>
-                <div class="form-group"><label>Estacionamento (R$/mês)</label><input type="number" id="estacionamentoValor" step="0.01"></div>
-                <div class="form-group"><label>Lavagem (R$/mês)</label><input type="number" id="lavagemValor" step="0.01"></div>
-                <div class="form-group"><label>Outros (R$/mês)</label><input type="number" id="outrosValor" step="0.01"></div>
+                <div class="form-group"><label>Licenciamento (R$/ano)</label><input type="text" id="licenciamentoValor" step="any"></div>
+                <div class="form-group"><label>Parcela do Carro (R$/mês)</label><input type="text" id="parcelaValor" step="any"></div>
+                <div class="form-group"><label>Estacionamento (R$/mês)</label><input type="text" id="estacionamentoValor" step="any"></div>
+                <div class="form-group"><label>Lavagem (R$/mês)</label><input type="text" id="lavagemValor" step="any"></div>
+                <div class="form-group"><label>Outros (R$/mês)</label><input type="text" id="outrosValor" step="any"></div>
             </div>
             <button onclick="salvarCustosFixos()">💾 Salvar</button>
         </div>
@@ -398,6 +398,23 @@
         pneus: { km: 40000, meses: 36, nome: 'Pneus' }
     };
     
+    // Função para converter vírgula para ponto (formato brasileiro)
+    function converterParaNumero(valor) {
+        if (!valor) return 0;
+        // Remove pontos de milhar e substitui vírgula por ponto
+        let str = valor.toString().replace(/\./g, '').replace(',', '.');
+        return parseFloat(str) || 0;
+    }
+    
+    // Função para formatar número no padrão brasileiro
+    function formatarNumero(valor, casasDecimais = 2) {
+        if (valor === null || valor === undefined || isNaN(valor)) return '0,00';
+        return valor.toLocaleString('pt-BR', {
+            minimumFractionDigits: casasDecimais,
+            maximumFractionDigits: casasDecimais
+        });
+    }
+    
     function formatarData(dataISO) {
         if (!dataISO) return '-';
         const data = new Date(dataISO);
@@ -414,7 +431,6 @@
                 dadosManutencoes = data.manutencoes || [];
                 custosFixos = data.custos || {};
                 
-                // NÃO cria veículo padrão - apenas usa os que existem
                 if (veiculos.length > 0 && !veiculoAtualId) {
                     veiculoAtualId = veiculos[0].id;
                 }
@@ -422,7 +438,6 @@
                 atualizarSeletorVeiculos();
                 atualizarTudo();
                 
-                // Se não há veículos, mostra mensagem
                 if (veiculos.length === 0) {
                     document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
                     document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
@@ -440,13 +455,24 @@
             return;
         }
         
-        const preco = parseFloat(document.getElementById('preco').value);
-        const litros = parseFloat(document.getElementById('litros').value);
-        const valorTotal = parseFloat(document.getElementById('valorTotal').value);
+        const preco = converterParaNumero(document.getElementById('preco').value);
+        const litrosDigitado = document.getElementById('litros').value;
+        const valorTotalDigitado = document.getElementById('valorTotal').value;
         const kmAtual = parseInt(document.getElementById('kmAtual').value);
         
         if (!preco || !kmAtual) { alert('Preencha Preço e KM!'); return; }
-        if (!litros && !valorTotal) { alert('Informe Litros OU Valor Total!'); return; }
+        if (!litrosDigitado && !valorTotalDigitado) { alert('Informe Litros OU Valor Total!'); return; }
+        
+        let litros = 0;
+        let valorTotal = 0;
+        
+        if (litrosDigitado) {
+            litros = converterParaNumero(litrosDigitado);
+            valorTotal = preco * litros;
+        } else if (valorTotalDigitado) {
+            valorTotal = converterParaNumero(valorTotalDigitado);
+            litros = valorTotal / preco;
+        }
         
         const abastecimento = {
             id: Date.now().toString(),
@@ -455,13 +481,10 @@
             combustivel: document.getElementById('combustivel').value,
             posto: document.getElementById('posto').value,
             preco: preco,
-            litros: litros || (valorTotal / preco),
-            valorTotal: valorTotal || (preco * litros),
+            litros: litros,
+            valorTotal: valorTotal,
             kmAtual: kmAtual
         };
-        
-        abastecimento.litros = parseFloat(abastecimento.litros.toFixed(3));
-        abastecimento.valorTotal = parseFloat(abastecimento.valorTotal.toFixed(2));
         
         try {
             await fetch(`${SCRIPT_URL}?action=addAbastecimento`, {
@@ -491,7 +514,7 @@
             tipo: tipoKey,
             tipoNome: intervalosManutencao[tipoKey]?.nome || document.getElementById('tipoServico').options[document.getElementById('tipoServico').selectedIndex].text,
             km: parseInt(document.getElementById('kmManut').value),
-            valor: parseFloat(document.getElementById('valorManut').value),
+            valor: converterParaNumero(document.getElementById('valorManut').value),
             obs: document.getElementById('obsManut').value
         };
         
@@ -525,13 +548,13 @@
         
         const custosData = {
             veiculoId: veiculoAtualId,
-            ipva: { valor: parseFloat(document.getElementById('ipvaValor').value) || 0, parcelas: parseInt(document.getElementById('ipvaParcelas').value) },
-            seguro: { valor: parseFloat(document.getElementById('seguroValor').value) || 0, periodo: document.getElementById('seguroPeriodo').value },
-            licenciamento: parseFloat(document.getElementById('licenciamentoValor').value) || 0,
-            parcela: parseFloat(document.getElementById('parcelaValor').value) || 0,
-            estacionamento: parseFloat(document.getElementById('estacionamentoValor').value) || 0,
-            lavagem: parseFloat(document.getElementById('lavagemValor').value) || 0,
-            outros: parseFloat(document.getElementById('outrosValor').value) || 0
+            ipva: { valor: converterParaNumero(document.getElementById('ipvaValor').value), parcelas: parseInt(document.getElementById('ipvaParcelas').value) },
+            seguro: { valor: converterParaNumero(document.getElementById('seguroValor').value), periodo: document.getElementById('seguroPeriodo').value },
+            licenciamento: converterParaNumero(document.getElementById('licenciamentoValor').value),
+            parcela: converterParaNumero(document.getElementById('parcelaValor').value),
+            estacionamento: converterParaNumero(document.getElementById('estacionamentoValor').value),
+            lavagem: converterParaNumero(document.getElementById('lavagemValor').value),
+            outros: converterParaNumero(document.getElementById('outrosValor').value)
         };
         
         try {
@@ -614,10 +637,15 @@
                 sorted[i].consumo = null;
                 sorted[i].custoPorKM = null;
             } else {
-                sorted[i].kmRodados = sorted[i].kmAtual - sorted[i-1].kmAtual;
-                if (sorted[i].kmRodados > 0 && sorted[i].litros) {
-                    sorted[i].consumo = sorted[i].kmRodados / sorted[i].litros;
-                    sorted[i].custoPorKM = sorted[i].valorTotal / sorted[i].kmRodados;
+                const kmRodados = sorted[i].kmAtual - sorted[i-1].kmAtual;
+                if (kmRodados > 0 && sorted[i].litros > 0) {
+                    sorted[i].kmRodados = kmRodados;
+                    sorted[i].consumo = kmRodados / sorted[i].litros;
+                    sorted[i].custoPorKM = sorted[i].valorTotal / kmRodados;
+                } else {
+                    sorted[i].kmRodados = null;
+                    sorted[i].consumo = null;
+                    sorted[i].custoPorKM = null;
                 }
             }
         }
@@ -626,7 +654,7 @@
     
     function calcularMetricas() {
         const processados = processarAbastecimentosComConsumo();
-        const comConsumo = processados.filter(p => p.consumo !== null && p.consumo > 0);
+        const comConsumo = processados.filter(p => p.consumo !== null && p.consumo > 0 && p.consumo < 50);
         if (comConsumo.length === 0) return null;
         
         let cGas = [], cEta = [], custoGas = [], custoEta = [];
@@ -636,12 +664,12 @@
         });
         
         return {
-            mediaGeral: ([...cGas, ...cEta].reduce((a,b)=>a+b,0)/(cGas.length+cEta.length) || 0).toFixed(1),
-            mediaCustoKM: ([...custoGas,...custoEta].reduce((a,b)=>a+b,0)/(custoGas.length+custoEta.length) || 0).toFixed(2),
-            consumoGasolina: (cGas.reduce((a,b)=>a+b,0)/cGas.length || 0).toFixed(1),
-            consumoEtanol: (cEta.reduce((a,b)=>a+b,0)/cEta.length || 0).toFixed(1),
-            custoGasolina: (custoGas.reduce((a,b)=>a+b,0)/custoGas.length || 0).toFixed(2),
-            custoEtanol: (custoEta.reduce((a,b)=>a+b,0)/custoEta.length || 0).toFixed(2),
+            mediaGeral: ([...cGas, ...cEta].reduce((a,b)=>a+b,0)/(cGas.length+cEta.length) || 0),
+            mediaCustoKM: ([...custoGas,...custoEta].reduce((a,b)=>a+b,0)/(custoGas.length+custoEta.length) || 0),
+            consumoGasolina: (cGas.reduce((a,b)=>a+b,0)/cGas.length || 0),
+            consumoEtanol: (cEta.reduce((a,b)=>a+b,0)/cEta.length || 0),
+            custoGasolina: (custoGas.reduce((a,b)=>a+b,0)/custoGas.length || 0),
+            custoEtanol: (custoEta.reduce((a,b)=>a+b,0)/custoEta.length || 0),
             totalAbastecimentos: comConsumo.length,
             ultimoConsumo: comConsumo[comConsumo.length-1]?.consumo || 0,
             melhorConsumo: Math.max(...comConsumo.map(c=>c.consumo)) || 0,
@@ -703,12 +731,12 @@
         }
         
         document.getElementById('dashboard').innerHTML = `
-            <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${m.mediaGeral} km/L</div><div class="metric-label">Média de consumo</div></div>
-            <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${m.mediaCustoKM}</div><div class="metric-label">Média geral</div></div>
-            <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${m.consumoGasolina} km/L</div><div class="metric-label">R$ ${m.custoGasolina}/km</div></div>
-            <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${m.consumoEtanol} km/L</div><div class="metric-label">R$ ${m.custoEtanol}/km</div></div>
-            <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${m.melhorConsumo} km/L</div><div class="metric-label">Pior: ${m.piorConsumo} km/L</div></div>
-            <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${m.ultimoConsumo} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
+            <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${formatarNumero(m.mediaGeral, 1)} km/L</div><div class="metric-label">Média de consumo</div></div>
+            <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${formatarNumero(m.mediaCustoKM, 2)}</div><div class="metric-label">Média geral</div></div>
+            <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${formatarNumero(m.consumoGasolina, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoGasolina, 2)}/km</div></div>
+            <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${formatarNumero(m.consumoEtanol, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoEtanol, 2)}/km</div></div>
+            <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${formatarNumero(m.melhorConsumo, 1)} km/L</div><div class="metric-label">Pior: ${formatarNumero(m.piorConsumo, 1)} km/L</div></div>
+            <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${formatarNumero(m.ultimoConsumo, 1)} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
         `;
         
         let alertas = [];
@@ -721,7 +749,7 @@
         
         document.getElementById('alertaContainer').innerHTML = alertas.map(a=>`<div class="alert alert-${a.tipo}">${a.msg}</div>`).join('');
         
-        let melhor = parseFloat(m.custoGasolina) < parseFloat(m.custoEtanol) ? 
+        let melhor = m.custoGasolina < m.custoEtanol ? 
             '✅ Recomendação: Gasolina (custo por km menor)' : '✅ Recomendação: Etanol (custo por km menor)';
         document.getElementById('recomendacao').innerHTML = melhor;
     }
@@ -744,7 +772,7 @@
         document.getElementById('rankingGastos').innerHTML = sorted.map(c => `
             <div class="ranking-item">
                 <div><strong>${c.nome}</strong></div>
-                <div><strong>R$ ${c.valor.toFixed(2)}</strong></div>
+                <div><strong>R$ ${formatarNumero(c.valor, 2)}</strong></div>
             </div>
             <div class="ranking-bar" style="width: ${(c.valor / maiorValor * 100)}%; background: ${c.cor};"></div>
         `).join('');
@@ -778,9 +806,9 @@
             container.innerHTML += `
                 <div class="manutencao-card manutencao-${status}">
                     <strong>🔧 ${config.nome}</strong><br>
-                    📅 Última: ${formatarData(ultimaManut.data)} (${ultimaManut.km.toLocaleString()} km)<br>
-                    📍 Próxima troca: quando atingir <strong>${proximoKM.toLocaleString()} km</strong> ou até <strong>${dataProxima.toLocaleDateString('pt-BR')}</strong><br>
-                    📊 ${percentKM}% do intervalo - Faltam ${kmRestante.toLocaleString()} km - ${mensagem}
+                    📅 Última: ${formatarData(ultimaManut.data)} (${ultimaManut.km.toLocaleString('pt-BR')} km)<br>
+                    📍 Próxima troca: quando atingir <strong>${proximoKM.toLocaleString('pt-BR')} km</strong> ou até <strong>${dataProxima.toLocaleDateString('pt-BR')}</strong><br>
+                    📊 ${percentKM}% do intervalo - Faltam ${kmRestante.toLocaleString('pt-BR')} km - ${mensagem}
                 </div>
             `;
         }
@@ -796,10 +824,10 @@
             row.insertCell(1).textContent = veiculos.find(v=>v.id===d.veiculoId)?.nome || '-';
             row.insertCell(2).textContent = d.combustivel;
             row.insertCell(3).textContent = d.posto;
-            row.insertCell(4).textContent = d.kmRodados || '-';
-            row.insertCell(5).textContent = d.litros?.toFixed(2) || '-';
-            row.insertCell(6).textContent = d.consumo ? d.consumo.toFixed(1) : 'Aguardando';
-            row.insertCell(7).textContent = d.custoPorKM ? `R$ ${d.custoPorKM.toFixed(2)}` : '-';
+            row.insertCell(4).textContent = d.kmRodados ? d.kmRodados.toLocaleString('pt-BR') : '-';
+            row.insertCell(5).textContent = d.litros ? formatarNumero(d.litros, 2) : '-';
+            row.insertCell(6).textContent = d.consumo ? formatarNumero(d.consumo, 1) : 'Aguardando';
+            row.insertCell(7).textContent = d.custoPorKM ? `R$ ${formatarNumero(d.custoPorKM, 2)}` : '-';
         });
     }
     
@@ -812,8 +840,8 @@
             row.insertCell(0).textContent = formatarData(m.data);
             row.insertCell(1).textContent = veiculos.find(v=>v.id===m.veiculoId)?.nome || '-';
             row.insertCell(2).textContent = m.tipoNome;
-            row.insertCell(3).textContent = m.km.toLocaleString();
-            row.insertCell(4).textContent = `R$ ${m.valor.toFixed(2)}`;
+            row.insertCell(3).textContent = m.km.toLocaleString('pt-BR');
+            row.insertCell(4).textContent = `R$ ${formatarNumero(m.valor, 2)}`;
             row.insertCell(5).textContent = m.obs || '-';
         });
     }
@@ -827,13 +855,13 @@
             <div class="table-container"><table style="min-width:300px">
                 <thead><tr><th>Item</th><th>Valor Anual</th><th>Valor Mensal</th></tr></thead>
                 <tbody>
-                    <tr><td>IPVA</td><td>R$ ${(custos.ipva?.valor || 0).toFixed(2)}</td><td>R$ ${ipvaMensal.toFixed(2)}</td></tr>
-                    <tr><td>Seguro</td><td>R$ ${custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0).toFixed(2) : ((custos.seguro?.valor || 0) * 12).toFixed(2)}</td><td>R$ ${seguroMensal.toFixed(2)}</td></tr>
-                    <tr><td>Licenciamento</td><td>R$ ${(custos.licenciamento || 0).toFixed(2)}</td><td>R$ ${((custos.licenciamento || 0) / 12).toFixed(2)}</td></tr>
-                    <tr><td>Parcela Carro</td><td>R$ ${((custos.parcela || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.parcela || 0).toFixed(2)}</td></tr>
-                    <tr><td>Estacionamento</td><td>R$ ${((custos.estacionamento || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.estacionamento || 0).toFixed(2)}</td></tr>
-                    <tr><td>Lavagem</td><td>R$ ${((custos.lavagem || 0) * 12).toFixed(2)}</td><td>R$ ${(custos.lavagem || 0).toFixed(2)}</td></tr>
-                    <tr style="background:#f0f0f0; font-weight:bold;"><td>TOTAL</td><td>R$ ${((custos.ipva?.valor || 0) + (custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0) : (custos.seguro?.valor || 0)*12) + (custos.licenciamento || 0) + ((custos.parcela || 0)*12) + ((custos.estacionamento || 0)*12) + ((custos.lavagem || 0)*12) + ((custos.outros || 0)*12)).toFixed(2)}</td><td>R$ ${calcularCustoMensalFixos().toFixed(2)}</td></tr>
+                    <tr><td>IPVA</td><td>R$ ${formatarNumero(custos.ipva?.valor || 0, 2)}</td><td>R$ ${formatarNumero(ipvaMensal, 2)}</td></tr>
+                    <tr><td>Seguro</td><td>R$ ${formatarNumero(custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0) : (custos.seguro?.valor || 0) * 12, 2)}</td><td>R$ ${formatarNumero(seguroMensal, 2)}</td></tr>
+                    <tr><td>Licenciamento</td><td>R$ ${formatarNumero(custos.licenciamento || 0, 2)}</td><td>R$ ${formatarNumero((custos.licenciamento || 0) / 12, 2)}</td></tr>
+                    <tr><td>Parcela Carro</td><td>R$ ${formatarNumero((custos.parcela || 0) * 12, 2)}</td><td>R$ ${formatarNumero(custos.parcela || 0, 2)}</td></tr>
+                    <tr><td>Estacionamento</td><td>R$ ${formatarNumero((custos.estacionamento || 0) * 12, 2)}</td><td>R$ ${formatarNumero(custos.estacionamento || 0, 2)}</td></tr>
+                    <tr><td>Lavagem</td><td>R$ ${formatarNumero((custos.lavagem || 0) * 12, 2)}</td><td>R$ ${formatarNumero(custos.lavagem || 0, 2)}</td></tr>
+                    <tr style="background:#f0f0f0; font-weight:bold;"><td>TOTAL</td><td>R$ ${formatarNumero(((custos.ipva?.valor || 0) + (custos.seguro?.periodo === 'anual' ? (custos.seguro?.valor || 0) : (custos.seguro?.valor || 0)*12) + (custos.licenciamento || 0) + ((custos.parcela || 0)*12) + ((custos.estacionamento || 0)*12) + ((custos.lavagem || 0)*12) + ((custos.outros || 0)*12)), 2)}</td><td>R$ ${formatarNumero(calcularCustoMensalFixos(), 2)}</td></tr>
                 </tbody>
             </table></div>
         `;
@@ -851,9 +879,9 @@
         const kmPorMes = totalKMRodados / meses;
         const custoFixoPorKM = kmPorMes > 0 ? custoMensalFixo / kmPorMes : 0;
         
-        document.getElementById('custoMensalTotal').innerHTML = `R$ ${(custoMensalFixo + (totalCombustivel + totalManutencao) / meses).toFixed(2)}`;
-        document.getElementById('custoPorKmTotal').innerHTML = `R$ ${(custoVariavelPorKM + custoFixoPorKM).toFixed(2)}`;
-        document.getElementById('detalheCustos').innerHTML = `⛽ Combustível: R$ ${totalCombustivel.toFixed(2)} | 🔧 Manutenção: R$ ${totalManutencao.toFixed(2)} | 🏠 Fixos/mês: R$ ${custoMensalFixo.toFixed(2)}`;
+        document.getElementById('custoMensalTotal').innerHTML = `R$ ${formatarNumero(custoMensalFixo + (totalCombustivel + totalManutencao) / meses, 2)}`;
+        document.getElementById('custoPorKmTotal').innerHTML = `R$ ${formatarNumero(custoVariavelPorKM + custoFixoPorKM, 2)}`;
+        document.getElementById('detalheCustos').innerHTML = `⛽ Combustível: R$ ${formatarNumero(totalCombustivel, 2)} | 🔧 Manutenção: R$ ${formatarNumero(totalManutencao, 2)} | 🏠 Fixos/mês: R$ ${formatarNumero(custoMensalFixo, 2)}`;
     }
     
     function atualizarComparativoVeiculos() {
@@ -864,13 +892,15 @@
                 const sorted = [...abasts].sort((a,b) => new Date(a.data) - new Date(b.data));
                 for (let i = 0; i < sorted.length; i++) {
                     if (i > 0 && sorted[i].litros) {
-                        sorted[i].kmRodados = sorted[i].kmAtual - sorted[i-1].kmAtual;
-                        sorted[i].consumo = sorted[i].kmRodados / sorted[i].litros;
+                        const kmRodados = sorted[i].kmAtual - sorted[i-1].kmAtual;
+                        if (kmRodados > 0 && sorted[i].litros > 0) {
+                            sorted[i].consumo = kmRodados / sorted[i].litros;
+                        }
                     }
                 }
-                return sorted.filter(p => p.consumo);
+                return sorted.filter(p => p.consumo && p.consumo > 0 && p.consumo < 50);
             })();
-            const consumoMedio = processados.length ? (processados.reduce((s,p)=>s+p.consumo,0)/processados.length).toFixed(1) : 0;
+            const consumoMedio = processados.length ? (processados.reduce((s,p)=>s+p.consumo,0)/processados.length) : 0;
             const totalGasto = abasts.reduce((s,a)=>s+a.valorTotal,0) + dadosManutencoes.filter(m=>m.veiculoId===v.id).reduce((s,m)=>s+m.valor,0);
             return { ...v, consumoMedio, totalGasto };
         }).sort((a,b) => (parseFloat(b.totalGasto) - parseFloat(a.totalGasto)));
@@ -880,16 +910,16 @@
         ranking.forEach(v => {
             let row = tbody.insertRow();
             row.insertCell(0).textContent = v.nome;
-            row.insertCell(1).textContent = `R$ ${(v.totalGasto / (v.consumoMedio || 1)).toFixed(2)}`;
-            row.insertCell(2).textContent = v.consumoMedio ? `${v.consumoMedio} km/L` : '-';
-            row.insertCell(3).textContent = `R$ ${v.totalGasto.toFixed(2)}`;
+            row.insertCell(1).textContent = `R$ ${formatarNumero(v.totalGasto / (v.consumoMedio || 1), 2)}`;
+            row.insertCell(2).textContent = v.consumoMedio ? `${formatarNumero(v.consumoMedio, 1)} km/L` : '-';
+            row.insertCell(3).textContent = `R$ ${formatarNumero(v.totalGasto, 2)}`;
         });
         
         document.getElementById('comparativoVeiculos').innerHTML = ranking.map(v => `
             <div class="comparativo-card" style="background:#f8f9fa; border-radius:12px; padding:12px; margin-bottom:10px;">
                 <strong>${v.nome}</strong><br>
-                💰 Total gasto: R$ ${v.totalGasto.toFixed(2)}<br>
-                📊 Consumo médio: ${v.consumoMedio || '-'} km/L
+                💰 Total gasto: R$ ${formatarNumero(v.totalGasto, 2)}<br>
+                📊 Consumo médio: ${v.consumoMedio ? `${formatarNumero(v.consumoMedio, 1)} km/L` : '-'}
             </div>
         `).join('');
     }
@@ -911,11 +941,11 @@
         analises += `• Gasolina: ${metaGasolina} km/L ${m.consumoGasolina >= metaGasolina ? '✅' : '⚠️ Abaixo da meta'}<br>`;
         analises += `• Média geral: ${metaGeral} km/L ${m.mediaGeral >= metaGeral ? '✅' : '⚠️ Abaixo da meta'}<br><br>`;
         
-        const gastoMedioMensal = parseFloat(document.getElementById('custoMensalTotal')?.innerText?.replace('R$ ', '') || 0);
+        const gastoMedioMensal = parseFloat(document.getElementById('custoMensalTotal')?.innerText?.replace('R$ ', '').replace(/\./g, '').replace(',', '.') || 0);
         if(gastoMedioMensal > 0) {
             analises += `<strong>📊 Projeção anual:</strong><br>`;
-            analises += `• Gasto mensal médio: R$ ${gastoMedioMensal.toFixed(2)}<br>`;
-            analises += `• Projeção anual: R$ ${(gastoMedioMensal * 12).toFixed(2)}<br>`;
+            analises += `• Gasto mensal médio: R$ ${formatarNumero(gastoMedioMensal, 2)}<br>`;
+            analises += `• Projeção anual: R$ ${formatarNumero(gastoMedioMensal * 12, 2)}<br>`;
             analises += `• Economia potencial com direção eficiente: até 20%<br>`;
         }
         
@@ -924,22 +954,22 @@
     
     function carregarCustosNoForm() {
         const custos = getDadosVeiculo().custos;
-        document.getElementById('ipvaValor').value = custos.ipva?.valor || '';
+        document.getElementById('ipvaValor').value = custos.ipva?.valor ? formatarNumero(custos.ipva.valor, 2) : '';
         document.getElementById('ipvaParcelas').value = custos.ipva?.parcelas || 1;
-        document.getElementById('seguroValor').value = custos.seguro?.valor || '';
+        document.getElementById('seguroValor').value = custos.seguro?.valor ? formatarNumero(custos.seguro.valor, 2) : '';
         document.getElementById('seguroPeriodo').value = custos.seguro?.periodo || 'anual';
-        document.getElementById('licenciamentoValor').value = custos.licenciamento || '';
-        document.getElementById('parcelaValor').value = custos.parcela || '';
-        document.getElementById('estacionamentoValor').value = custos.estacionamento || '';
-        document.getElementById('lavagemValor').value = custos.lavagem || '';
-        document.getElementById('outrosValor').value = custos.outros || '';
+        document.getElementById('licenciamentoValor').value = custos.licenciamento ? formatarNumero(custos.licenciamento, 2) : '';
+        document.getElementById('parcelaValor').value = custos.parcela ? formatarNumero(custos.parcela, 2) : '';
+        document.getElementById('estacionamentoValor').value = custos.estacionamento ? formatarNumero(custos.estacionamento, 2) : '';
+        document.getElementById('lavagemValor').value = custos.lavagem ? formatarNumero(custos.lavagem, 2) : '';
+        document.getElementById('outrosValor').value = custos.outros ? formatarNumero(custos.outros, 2) : '';
     }
     
     let consumoChart, comparativoChart, custosChart;
     
     function atualizarGraficos() {
         const processados = processarAbastecimentosComConsumo();
-        const comConsumo = processados.filter(p => p.consumo !== null);
+        const comConsumo = processados.filter(p => p.consumo !== null && p.consumo < 50);
         let labels = comConsumo.map(d=>formatarData(d.data));
         let consumos = comConsumo.map(d=>d.consumo);
         if(consumoChart) consumoChart.destroy();
@@ -993,12 +1023,17 @@
     }
     
     function calcularLitrosOuValor() {
-        const preco = parseFloat(document.getElementById('preco').value);
+        const preco = converterParaNumero(document.getElementById('preco').value);
         const litros = document.getElementById('litros').value;
         const valorTotal = document.getElementById('valorTotal').value;
         if (preco > 0) {
-            if (litros && !valorTotal) document.getElementById('valorTotal').value = (preco * parseFloat(litros)).toFixed(2);
-            else if (valorTotal && !litros) document.getElementById('litros').value = (parseFloat(valorTotal) / preco).toFixed(3);
+            if (litros && !valorTotal) {
+                const litrosNum = converterParaNumero(litros);
+                document.getElementById('valorTotal').value = formatarNumero(preco * litrosNum, 2);
+            } else if (valorTotal && !litros) {
+                const valorNum = converterParaNumero(valorTotal);
+                document.getElementById('litros').value = formatarNumero(valorNum / preco, 3);
+            }
         }
     }
     
