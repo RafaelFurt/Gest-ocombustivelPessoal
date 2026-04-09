@@ -1022,20 +1022,30 @@
         document.getElementById('novoVeiculoAno').value = '';
     }
     
-    function calcularLitrosOuValor() {
-        const preco = converterParaNumero(document.getElementById('preco').value);
-        const litros = document.getElementById('litros').value;
-        const valorTotal = document.getElementById('valorTotal').value;
+   function calcularLitrosOuValor() {
+        // Pega os valores dos campos como texto (ex: "6,79" e "237,02")
+        const precoTexto = document.getElementById('preco').value;
+        const litrosTexto = document.getElementById('litros').value;
+        const valorTexto = document.getElementById('valorTotal').value;
+    
+        // Converte para número (vírgula vira ponto)
+        const preco = converterParaNumero(precoTexto);
+    
         if (preco > 0) {
-            if (litros && !valorTotal) {
-                const litrosNum = converterParaNumero(litros);
-                document.getElementById('valorTotal').value = formatarNumero(preco * litrosNum, 2);
-            } else if (valorTotal && !litros) {
-                const valorNum = converterParaNumero(valorTotal);
-                document.getElementById('litros').value = formatarNumero(valorNum / preco, 3);
-            }
+        // Se usuário digitou litros, calcula o valor total
+        if (litrosTexto && litrosTexto !== '' && !valorTexto) {
+            const litros = converterParaNumero(litrosTexto);
+            const valorCalculado = preco * litros;
+            document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
+        }
+        // Se usuário digitou valor total, calcula os litros
+        else if (valorTexto && valorTexto !== '' && !litrosTexto) {
+            const valor = converterParaNumero(valorTexto);
+            const litrosCalculado = valor / preco;
+            document.getElementById('litros').value = formatarNumero(litrosCalculado, 3);
         }
     }
+}
     
     document.getElementById('preco').addEventListener('input', calcularLitrosOuValor);
     document.getElementById('litros').addEventListener('input', calcularLitrosOuValor);
