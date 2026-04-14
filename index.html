@@ -423,12 +423,29 @@
     
     async function carregarTodosDados() {
         try {
+            // ***** ATENÇÃO: ATUALIZE O URL ABAIXO COM O NOVO URL DA SUA IMPLANTAÇÃO *****
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVdVL48Wd1WvonS_HDYl1I37vYTGsjtYrdUmx8Z8HnVMUkh8WeBSageG2_DY4Mjp18Hg/exec';
+            
             const response = await fetch(`${SCRIPT_URL}?action=getAll`);
             const data = await response.json();
             if (data.success) {
                 veiculos = data.veiculos || [];
-                dadosAbastecimentos = data.abastecimentos || [];
-                dadosManutencoes = data.manutencoes || [];
+                
+                // ***** GARANTIR QUE OS NÚMEROS SEJAM NÚMEROS (REAL CONVERSION) *****
+                dadosAbastecimentos = (data.abastecimentos || []).map(a => ({
+                    ...a,
+                    preco: Number(a.preco) || 0,
+                    litros: Number(a.litros) || 0,
+                    valorTotal: Number(a.valorTotal) || 0,
+                    kmAtual: Number(a.kmAtual) || 0
+                }));
+                
+                dadosManutencoes = (data.manutencoes || []).map(m => ({
+                    ...m,
+                    km: Number(m.km) || 0,
+                    valor: Number(m.valor) || 0
+                }));
+                
                 custosFixos = data.custos || {};
                 
                 if (veiculos.length > 0 && !veiculoAtualId) {
