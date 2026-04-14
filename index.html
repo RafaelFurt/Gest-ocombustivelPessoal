@@ -421,50 +421,49 @@
         return data.toLocaleDateString('pt-BR');
     }
     
-    async function carregarTodosDados() {
-        try {
-            // ***** ATENÇÃO: ATUALIZE O URL ABAIXO COM O NOVO URL DA SUA IMPLANTAÇÃO *****
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxVdVL48Wd1WvonS_HDYl1I37vYTGsjtYrdUmx8Z8HnVMUkh8WeBSageG2_DY4Mjp18Hg/exec';
+async function carregarTodosDados() {
+    try {
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_JpsCcvw0odo5i0rxJt_aG9_zbnUrzMaXcmk95odUdnQ_PQnQXLRkin2wuO6tOoV0dA/exec'; // ATUALIZE COM SEU URL
+        
+        const response = await fetch(`${SCRIPT_URL}?action=getAll`);
+        const data = await response.json();
+        if (data.success) {
+            veiculos = data.veiculos || [];
             
-            const response = await fetch(`${SCRIPT_URL}?action=getAll`);
-            const data = await response.json();
-            if (data.success) {
-                veiculos = data.veiculos || [];
-                
-                // ***** GARANTIR QUE OS NÚMEROS SEJAM NÚMEROS (REAL CONVERSION) *****
-                dadosAbastecimentos = (data.abastecimentos || []).map(a => ({
-                    ...a,
-                    preco: Number(a.preco) || 0,
-                    litros: Number(a.litros) || 0,
-                    valorTotal: Number(a.valorTotal) || 0,
-                    kmAtual: Number(a.kmAtual) || 0
-                }));
-                
-                dadosManutencoes = (data.manutencoes || []).map(m => ({
-                    ...m,
-                    km: Number(m.km) || 0,
-                    valor: Number(m.valor) || 0
-                }));
-                
-                custosFixos = data.custos || {};
-                
-                if (veiculos.length > 0 && !veiculoAtualId) {
-                    veiculoAtualId = veiculos[0].id;
-                }
-                
-                atualizarSeletorVeiculos();
-                atualizarTudo();
-                
-                if (veiculos.length === 0) {
-                    document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
-                    document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
-                }
+            // ***** CORREÇÃO: Converte strings com vírgula para número *****
+            dadosAbastecimentos = (data.abastecimentos || []).map(a => ({
+                ...a,
+                preco: converterParaNumero(a.preco),
+                litros: converterParaNumero(a.litros),
+                valorTotal: converterParaNumero(a.valorTotal),
+                kmAtual: Number(a.kmAtual) || 0
+            }));
+            
+            dadosManutencoes = (data.manutencoes || []).map(m => ({
+                ...m,
+                km: Number(m.km) || 0,
+                valor: converterParaNumero(m.valor)
+            }));
+            
+            custosFixos = data.custos || {};
+            
+            if (veiculos.length > 0 && !veiculoAtualId) {
+                veiculoAtualId = veiculos[0].id;
             }
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao conectar com Google Sheets. Verifique sua internet.');
+            
+            atualizarSeletorVeiculos();
+            atualizarTudo();
+            
+            if (veiculos.length === 0) {
+                document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
+                document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
+            }
         }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com Google Sheets. Verifique sua internet.');
     }
+}
     
 async function salvarAbastecimento() {
     if (!veiculoAtualId) {
