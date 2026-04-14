@@ -398,22 +398,62 @@
         pneus: { km: 40000, meses: 36, nome: 'Pneus' }
     };
     
-    // Função para converter vírgula para ponto (formato brasileiro)
-    function converterParaNumero(valor) {
-        if (!valor) return 0;
-        // Remove pontos de milhar e substitui vírgula por ponto
-        let str = valor.toString().replace(/\./g, '').replace(',', '.');
+function converterParaNumero(valor) {
+    if (!valor) return 0;
+    if (typeof valor === 'number') return valor;
+    
+    let str = valor.toString().trim();
+    
+    // Se já está em formato americano (ex: "6.79"), converte direto
+    if (str.includes('.') && !str.includes(',')) {
         return parseFloat(str) || 0;
     }
     
-    // Função para formatar número no padrão brasileiro
-    function formatarNumero(valor, casasDecimais = 2) {
-        if (valor === null || valor === undefined || isNaN(valor)) return '0,00';
+    // Remove possíveis símbolos de moeda
+    str = str.replace(/[R$\s]/g, '');
+    
+    // Verifica se tem separador de milhar (ponto) E vírgula decimal
+    if (str.includes('.') && str.includes(',')) {
+        // Formato: 1.234,56 -> remove pontos e troca vírgula por ponto
+        str = str.replace(/\./g, '').replace(',', '.');
+    }
+    // Se só tem vírgula (formato: 235,43)
+    else if (str.includes(',') && !str.includes('.')) {
+        // Verifica se a vírgula é decimal ou de milhar
+        const partes = str.split(',');
+        if (partes.length === 2 && partes[1].length <= 3) {
+            // É decimal: 235,43 -> 235.43
+            str = str.replace(',', '.');
+        } else {
+            // É milhar: 1234 -> remove vírgula
+            str = str.replace(/,/g, '');
+        }
+    }
+    // Se só tem ponto (formato: 235.43)
+    else if (str.includes('.') && !str.includes(',')) {
+        // Já está no formato correto
+    }
+    
+    return parseFloat(str) || 0;
+}
+    
+function formatarNumero(valor, casasDecimais = 2) {
+    if (valor === null || valor === undefined || isNaN(valor)) return '0,00';
+    
+    // Para litros, usar 3 casas decimais
+    if (casasDecimais === 3) {
         return valor.toLocaleString('pt-BR', {
-            minimumFractionDigits: casasDecimais,
-            maximumFractionDigits: casasDecimais
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
         });
     }
+    
+    // Para valores monetários, usar 2 casas
+    return valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: casasDecimais,
+        maximumFractionDigits: casasDecimais
+    });
+}
     
     function formatarData(dataISO) {
         if (!dataISO) return '-';
@@ -423,7 +463,7 @@
     
 async function carregarTodosDados() {
     try {
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_JpsCcvw0odo5i0rxJt_aG9_zbnUrzMaXcmk95odUdnQ_PQnQXLRkin2wuO6tOoV0dA/exec'; // ATUALIZE COM SEU URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxt9mjO9hjc30Rq3vxpWeW15gT9P4kh6aHBzaCKcNQkW_l6iYZbw7_381MDSNm7BZWKRA/exec'; // ATUALIZE COM SEU URL
         
         const response = await fetch(`${SCRIPT_URL}?action=getAll`);
         const data = await response.json();
