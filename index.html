@@ -466,56 +466,99 @@
         }
     }
     
-    async function salvarAbastecimento() {
-        if (!veiculoAtualId) {
-            alert('Cadastre um veículo primeiro!');
-            return;
-        }
-        
-        const preco = converterParaNumero(document.getElementById('preco').value);
-        const litrosDigitado = document.getElementById('litros').value;
-        const valorTotalDigitado = document.getElementById('valorTotal').value;
-        const kmAtual = parseInt(document.getElementById('kmAtual').value);
-        
-        if (!preco || !kmAtual) { alert('Preencha Preço e KM!'); return; }
-        if (!litrosDigitado && !valorTotalDigitado) { alert('Informe Litros OU Valor Total!'); return; }
-        
-        let litros = 0;
-        let valorTotal = 0;
-        
-        if (litrosDigitado) {
-            litros = converterParaNumero(litrosDigitado);
-            valorTotal = preco * litros;
-        } else if (valorTotalDigitado) {
-            valorTotal = converterParaNumero(valorTotalDigitado);
-            litros = valorTotal / preco;
-        }
-        
-        const abastecimento = {
-            id: Date.now().toString(),
-            veiculoId: veiculoAtualId,
-            data: document.getElementById('data').value,
-            combustivel: document.getElementById('combustivel').value,
-            posto: document.getElementById('posto').value,
-            preco: preco,
-            litros: litros,
-            valorTotal: valorTotal,
-            kmAtual: kmAtual
-        };
-        
-        try {
-            await fetch(`${SCRIPT_URL}?action=addAbastecimento`, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(abastecimento)
-            });
-            alert('✅ Abastecimento salvo!');
-            limparFormularioAbastecimento();
-            await carregarTodosDados();
-        } catch (error) {
-            alert('Erro ao salvar.');
-        }
+async function salvarAbastecimento() {
+    if (!veiculoAtualId) {
+        alert('Cadastre um veículo primeiro!');
+        return;
     }
+    
+    // ***** FORÇA O CÁLCULO ANTES DE SALVAR *****
+    calcularLitrosOuValor();
+    
+    const preco = converterParaNumero(document.getElementById('preco').value);
+    let litrosDigitado = document.getElementById('litros').value;
+    let valorTotalDigitado = document.getElementById('valorTotal').value;
+    const kmAtual = parseInt(document.getElementById('kmAtual').value);
+    
+    if (!preco || !kmAtual) { 
+        alert('Preencha Preço e KM!'); 
+        return; 
+    }
+    
+    if (!litrosDigitado && !valorTotalDigitado) { 
+        alert('Informe Litros OU Valor Total!'); 
+        return; 
+    }
+    
+    let litros = 0;
+    let valorTotal = 0;
+    
+    // Converte para número
+    if (litrosDigitado) {
+        litros = converterParaNumero(litrosDigitado);
+    }
+    if (valorTotalDigitado) {
+        valorTotal = converterParaNumero(valorTotalDigitado);
+    }
+    
+    // ***** NOVO: Verifica consistência e recalcula se necessário *****
+    if (litros > 0 && valorTotal > 0) {
+        // Verifica se o valor total confere com litros * preço
+        const valorCalculado = preco * litros;
+        if (Math.abs(valorTotal - valorCalculado) > 0.5) {
+            console.warn(`Inconsistência: Litros=${litros}, Valor=${valorTotal}, Esperado=${valorCalculado}`);
+            // Corrige o valor total
+            valorTotal = valorCalculado;
+            document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
+        }
+    } else if (valorTotal > 0 && litros === 0) {
+        litros = valorTotal / preco;
+        document.getElementById('litros').value = formatarNumero(litros, 3);
+    } else if (litros > 0 && valorTotal === 0) {
+        valorTotal = preco * litros;
+        document.getElementById('valorTotal').value = formatarNumero(valorTotal, 2);
+    }
+    
+    // ***** NOVO: Mostra confirmação dos dados calculados *****
+    const confirmar = confirm(
+        `Confirme os dados do abastecimento:\n\n` +
+        `Preço/Litro: R$ ${formatarNumero(preco, 2)}\n` +
+        `Litros: ${formatarNumero(litros, 3)}\n` +
+        `Valor Total: R$ ${formatarNumero(valorTotal, 2)}\n` +
+        `KM Atual: ${kmAtual}\n\n` +
+        `Está correto?`
+    );
+    
+    if (!confirmar) {
+        return; // Usuário cancelou
+    }
+    
+    const abastecimento = {
+        id: Date.now().toString(),
+        veiculoId: veiculoAtualId,
+        data: document.getElementById('data').value,
+        combustivel: document.getElementById('combustivel').value,
+        posto: document.getElementById('posto').value,
+        preco: preco,
+        litros: litros,
+        valorTotal: valorTotal,
+        kmAtual: kmAtual
+    };
+    
+    try {
+        await fetch(`${SCRIPT_URL}?action=addAbastecimento`, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(abastecimento)
+        });
+        alert('✅ Abastecimento salvo com sucesso!');
+        limparFormularioAbastecimento();
+        await carregarTodosDados();
+    } catch (error) {
+        console.error('Erro ao salvar:', error);
+        alert('Erro ao salvar. Verifique o console para mais detalhes.');
+    }
+}
     
     async function salvarManutencao() {
         if (!veiculoAtualId) {
@@ -1038,24 +1081,28 @@ function atualizarDashboard() {
         document.getElementById('novoVeiculoAno').value = '';
     }
     
-   function calcularLitrosOuValor() {
-        // Pega os valores dos campos como texto (ex: "6,79" e "237,02")
-        const precoTexto = document.getElementById('preco').value;
-        const litrosTexto = document.getElementById('litros').value;
-        const valorTexto = document.getElementById('valorTotal').value;
-    
-        // Converte para número (vírgula vira ponto)
-        const preco = converterParaNumero(precoTexto);
-    
-        if (preco > 0) {
-        // Se usuário digitou litros, calcula o valor total
-        if (litrosTexto && litrosTexto !== '' && !valorTexto) {
+  function calcularLitrosOuValor() {
+    const precoTexto = document.getElementById('preco').value;
+    const litrosTexto = document.getElementById('litros').value;
+    const valorTexto = document.getElementById('valorTotal').value;
+
+    const preco = converterParaNumero(precoTexto);
+
+    if (preco > 0) {
+        // Se AMBOS estão preenchidos, prioriza LITROS e recalcula VALOR
+        if (litrosTexto && litrosTexto !== '' && valorTexto && valorTexto !== '') {
             const litros = converterParaNumero(litrosTexto);
             const valorCalculado = preco * litros;
             document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
         }
-        // Se usuário digitou valor total, calcula os litros
-        else if (valorTexto && valorTexto !== '' && !litrosTexto) {
+        // Se só tem LITROS, calcula VALOR
+        else if (litrosTexto && litrosTexto !== '') {
+            const litros = converterParaNumero(litrosTexto);
+            const valorCalculado = preco * litros;
+            document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
+        }
+        // Se só tem VALOR, calcula LITROS
+        else if (valorTexto && valorTexto !== '') {
             const valor = converterParaNumero(valorTexto);
             const litrosCalculado = valor / preco;
             document.getElementById('litros').value = formatarNumero(litrosCalculado, 3);
