@@ -263,14 +263,14 @@
     <div id="tab-abastecimento" class="tab-content">
         <div class="card">
             <h2>⛽ Novo Abastecimento</h2>
-            <div class="info-box">💡 Informe o <strong>KM Atual</strong> + <strong>Litros</strong> ou <strong>Valor Total</strong> (use vírgula para decimais, ex: 237,02)</div>
+            <div class="info-box">💡 Digite o Preço por Litro + Valor Total (ou Litros). Pressione TAB ou ENTER para calcular automaticamente.</div>
             <div class="form-grid">
                 <div class="form-group"><label>📅 Data</label><input type="date" id="data" required></div>
                 <div class="form-group"><label>⛽ Combustível</label><select id="combustivel"><option>Etanol</option><option>Gasolina</option></select></div>
                 <div class="form-group"><label>🏪 Posto</label><input type="text" id="posto" placeholder="Ex: Shell" required></div>
-                <div class="form-group"><label>💰 Preço por Litro (R$)</label><input type="text" id="preco" step="any" placeholder="Ex: 6,79" required></div>
-                <div class="form-group"><label>⛽ Litros</label><input type="text" id="litros" step="any" placeholder="Ou deixe em branco"></div>
-                <div class="form-group"><label>💵 Valor Total (R$)</label><input type="text" id="valorTotal" step="any" placeholder="Ou deixe em branco"></div>
+                <div class="form-group"><label>💰 Preço por Litro (R$)</label><input type="text" id="preco" placeholder="Ex: 6,79" required></div>
+                <div class="form-group"><label>⛽ Litros</label><input type="text" id="litros" placeholder="Calculado automaticamente"></div>
+                <div class="form-group"><label>💵 Valor Total (R$)</label><input type="text" id="valorTotal" placeholder="Ex: 235,43"></div>
                 <div class="form-group"><label>📊 KM Atual</label><input type="number" id="kmAtual" required placeholder="KM do hodômetro"></div>
             </div>
             <button onclick="salvarAbastecimento()">💾 Salvar Abastecimento</button>
@@ -302,7 +302,7 @@
                     </select>
                 </div>
                 <div class="form-group"><label>KM Atual</label><input type="number" id="kmManut" required></div>
-                <div class="form-group"><label>Valor (R$)</label><input type="text" id="valorManut" step="any" placeholder="Ex: 320,00" required></div>
+                <div class="form-group"><label>Valor (R$)</label><input type="text" id="valorManut" placeholder="Ex: 320,00" required></div>
                 <div class="form-group"><label>Observação</label><input type="text" id="obsManut" placeholder="Opcional"></div>
             </div>
             <button onclick="salvarManutencao()">💾 Salvar Manutenção</button>
@@ -323,15 +323,15 @@
             <h2>💰 Custos Fixos - Configuração</h2>
             <div class="info-box">💡 Informe o valor TOTAL do custo. IPVA pode ser parcelado.</div>
             <div class="form-grid">
-                <div class="form-group"><label>IPVA (R$)</label><input type="text" id="ipvaValor" step="any" placeholder="Valor total"></div>
+                <div class="form-group"><label>IPVA (R$)</label><input type="text" id="ipvaValor" placeholder="Valor total"></div>
                 <div class="form-group"><label>Pagamento IPVA</label><select id="ipvaParcelas"><option value="1">À vista (1x)</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option></select></div>
-                <div class="form-group"><label>Seguro (R$)</label><input type="text" id="seguroValor" step="any" placeholder="Valor"></div>
+                <div class="form-group"><label>Seguro (R$)</label><input type="text" id="seguroValor" placeholder="Valor"></div>
                 <div class="form-group"><label>Periodicidade</label><select id="seguroPeriodo"><option value="anual">Anual</option><option value="mensal">Mensal</option></select></div>
-                <div class="form-group"><label>Licenciamento (R$/ano)</label><input type="text" id="licenciamentoValor" step="any"></div>
-                <div class="form-group"><label>Parcela do Carro (R$/mês)</label><input type="text" id="parcelaValor" step="any"></div>
-                <div class="form-group"><label>Estacionamento (R$/mês)</label><input type="text" id="estacionamentoValor" step="any"></div>
-                <div class="form-group"><label>Lavagem (R$/mês)</label><input type="text" id="lavagemValor" step="any"></div>
-                <div class="form-group"><label>Outros (R$/mês)</label><input type="text" id="outrosValor" step="any"></div>
+                <div class="form-group"><label>Licenciamento (R$/ano)</label><input type="text" id="licenciamentoValor"></div>
+                <div class="form-group"><label>Parcela do Carro (R$/mês)</label><input type="text" id="parcelaValor"></div>
+                <div class="form-group"><label>Estacionamento (R$/mês)</label><input type="text" id="estacionamentoValor"></div>
+                <div class="form-group"><label>Lavagem (R$/mês)</label><input type="text" id="lavagemValor"></div>
+                <div class="form-group"><label>Outros (R$/mês)</label><input type="text" id="outrosValor"></div>
             </div>
             <button onclick="salvarCustosFixos()">💾 Salvar</button>
         </div>
@@ -379,7 +379,8 @@
 </div>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLYIxHDJeu2ej1zaY7qXE_BT7IbA00tqsa3hTB0dUK0KP2uuEwpk3zDC3A5X6TpITh-A/exec';
+    // ATUALIZE ESTE URL COM O SEU URL DE IMPLANTAÇÃO DO APPS SCRIPT
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxt9mjO9hjc30Rq3vxpWeW15gT9P4kh6aHBzaCKcNQkW_l6iYZbw7_381MDSNm7BZWKRA/exec';
     
     let veiculos = [];
     let veiculoAtualId = null;
@@ -398,62 +399,47 @@
         pneus: { km: 40000, meses: 36, nome: 'Pneus' }
     };
     
-function converterParaNumero(valor) {
-    if (!valor) return 0;
-    if (typeof valor === 'number') return valor;
-    
-    let str = valor.toString().trim();
-    
-    // Se já está em formato americano (ex: "6.79"), converte direto
-    if (str.includes('.') && !str.includes(',')) {
+    function converterParaNumero(valor) {
+        if (!valor) return 0;
+        if (typeof valor === 'number') return valor;
+        
+        let str = valor.toString().trim();
+        
+        if (str.includes('.') && !str.includes(',')) {
+            return parseFloat(str) || 0;
+        }
+        
+        str = str.replace(/[R$\s]/g, '');
+        
+        if (str.includes('.') && str.includes(',')) {
+            str = str.replace(/\./g, '').replace(',', '.');
+        } else if (str.includes(',') && !str.includes('.')) {
+            const partes = str.split(',');
+            if (partes.length === 2 && partes[1].length <= 3) {
+                str = str.replace(',', '.');
+            } else {
+                str = str.replace(/,/g, '');
+            }
+        }
+        
         return parseFloat(str) || 0;
     }
     
-    // Remove possíveis símbolos de moeda
-    str = str.replace(/[R$\s]/g, '');
-    
-    // Verifica se tem separador de milhar (ponto) E vírgula decimal
-    if (str.includes('.') && str.includes(',')) {
-        // Formato: 1.234,56 -> remove pontos e troca vírgula por ponto
-        str = str.replace(/\./g, '').replace(',', '.');
-    }
-    // Se só tem vírgula (formato: 235,43)
-    else if (str.includes(',') && !str.includes('.')) {
-        // Verifica se a vírgula é decimal ou de milhar
-        const partes = str.split(',');
-        if (partes.length === 2 && partes[1].length <= 3) {
-            // É decimal: 235,43 -> 235.43
-            str = str.replace(',', '.');
-        } else {
-            // É milhar: 1234 -> remove vírgula
-            str = str.replace(/,/g, '');
+    function formatarNumero(valor, casasDecimais = 2) {
+        if (valor === null || valor === undefined || isNaN(valor)) return '0,00';
+        
+        if (casasDecimais === 3) {
+            return valor.toLocaleString('pt-BR', {
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3
+            });
         }
-    }
-    // Se só tem ponto (formato: 235.43)
-    else if (str.includes('.') && !str.includes(',')) {
-        // Já está no formato correto
-    }
-    
-    return parseFloat(str) || 0;
-}
-    
-function formatarNumero(valor, casasDecimais = 2) {
-    if (valor === null || valor === undefined || isNaN(valor)) return '0,00';
-    
-    // Para litros, usar 3 casas decimais
-    if (casasDecimais === 3) {
+        
         return valor.toLocaleString('pt-BR', {
-            minimumFractionDigits: 3,
-            maximumFractionDigits: 3
+            minimumFractionDigits: casasDecimais,
+            maximumFractionDigits: casasDecimais
         });
     }
-    
-    // Para valores monetários, usar 2 casas
-    return valor.toLocaleString('pt-BR', {
-        minimumFractionDigits: casasDecimais,
-        maximumFractionDigits: casasDecimais
-    });
-}
     
     function formatarData(dataISO) {
         if (!dataISO) return '-';
@@ -461,143 +447,151 @@ function formatarNumero(valor, casasDecimais = 2) {
         return data.toLocaleDateString('pt-BR');
     }
     
-async function carregarTodosDados() {
-    try {
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxt9mjO9hjc30Rq3vxpWeW15gT9P4kh6aHBzaCKcNQkW_l6iYZbw7_381MDSNm7BZWKRA/exec'; // ATUALIZE COM SEU URL
+    async function carregarTodosDados() {
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=getAll`);
+            const data = await response.json();
+            if (data.success) {
+                veiculos = data.veiculos || [];
+                
+                dadosAbastecimentos = (data.abastecimentos || []).map(a => ({
+                    ...a,
+                    preco: converterParaNumero(a.preco),
+                    litros: converterParaNumero(a.litros),
+                    valorTotal: converterParaNumero(a.valorTotal),
+                    kmAtual: Number(a.kmAtual) || 0
+                }));
+                
+                dadosManutencoes = (data.manutencoes || []).map(m => ({
+                    ...m,
+                    km: Number(m.km) || 0,
+                    valor: converterParaNumero(m.valor)
+                }));
+                
+                custosFixos = data.custos || {};
+                
+                if (veiculos.length > 0 && !veiculoAtualId) {
+                    veiculoAtualId = veiculos[0].id;
+                }
+                
+                atualizarSeletorVeiculos();
+                atualizarTudo();
+                
+                if (veiculos.length === 0) {
+                    document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
+                    document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
+                }
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao conectar com Google Sheets. Verifique sua internet.');
+        }
+    }
+    
+    function calcularLitrosOuValor() {
+        const precoTexto = document.getElementById('preco').value;
+        const litrosTexto = document.getElementById('litros').value;
+        const valorTexto = document.getElementById('valorTotal').value;
+
+        const preco = converterParaNumero(precoTexto);
+
+        if (preco > 0) {
+            if (litrosTexto && litrosTexto !== '' && !valorTexto) {
+                const litros = converterParaNumero(litrosTexto);
+                const valorCalculado = preco * litros;
+                document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
+            } else if (valorTexto && valorTexto !== '' && !litrosTexto) {
+                const valor = converterParaNumero(valorTexto);
+                const litrosCalculado = valor / preco;
+                document.getElementById('litros').value = formatarNumero(litrosCalculado, 3);
+            }
+        }
+    }
+    
+    async function salvarAbastecimento() {
+        if (!veiculoAtualId) {
+            alert('Cadastre um veículo primeiro!');
+            return;
+        }
         
-        const response = await fetch(`${SCRIPT_URL}?action=getAll`);
-        const data = await response.json();
-        if (data.success) {
-            veiculos = data.veiculos || [];
-            
-            // ***** CORREÇÃO: Converte strings com vírgula para número *****
-            dadosAbastecimentos = (data.abastecimentos || []).map(a => ({
-                ...a,
-                preco: converterParaNumero(a.preco),
-                litros: converterParaNumero(a.litros),
-                valorTotal: converterParaNumero(a.valorTotal),
-                kmAtual: Number(a.kmAtual) || 0
-            }));
-            
-            dadosManutencoes = (data.manutencoes || []).map(m => ({
-                ...m,
-                km: Number(m.km) || 0,
-                valor: converterParaNumero(m.valor)
-            }));
-            
-            custosFixos = data.custos || {};
-            
-            if (veiculos.length > 0 && !veiculoAtualId) {
-                veiculoAtualId = veiculos[0].id;
-            }
-            
-            atualizarSeletorVeiculos();
-            atualizarTudo();
-            
-            if (veiculos.length === 0) {
-                document.getElementById('dashboard').innerHTML = '<div class="metric-card">Nenhum veículo cadastrado.<br>Clique em "+ Novo Veículo" para começar.</div>';
-                document.getElementById('recomendacao').innerHTML = '📌 Cadastre um veículo para começar a usar o sistema.';
-            }
+        calcularLitrosOuValor();
+        
+        const preco = converterParaNumero(document.getElementById('preco').value);
+        let litrosDigitado = document.getElementById('litros').value;
+        let valorTotalDigitado = document.getElementById('valorTotal').value;
+        const kmAtual = parseInt(document.getElementById('kmAtual').value);
+        
+        if (!preco || !kmAtual) { 
+            alert('Preencha Preço e KM!'); 
+            return; 
         }
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao conectar com Google Sheets. Verifique sua internet.');
-    }
-}
-    
-async function salvarAbastecimento() {
-    if (!veiculoAtualId) {
-        alert('Cadastre um veículo primeiro!');
-        return;
-    }
-    
-    // ***** FORÇA O CÁLCULO ANTES DE SALVAR *****
-    calcularLitrosOuValor();
-    
-    const preco = converterParaNumero(document.getElementById('preco').value);
-    let litrosDigitado = document.getElementById('litros').value;
-    let valorTotalDigitado = document.getElementById('valorTotal').value;
-    const kmAtual = parseInt(document.getElementById('kmAtual').value);
-    
-    if (!preco || !kmAtual) { 
-        alert('Preencha Preço e KM!'); 
-        return; 
-    }
-    
-    if (!litrosDigitado && !valorTotalDigitado) { 
-        alert('Informe Litros OU Valor Total!'); 
-        return; 
-    }
-    
-    let litros = 0;
-    let valorTotal = 0;
-    
-    // Converte para número
-    if (litrosDigitado) {
-        litros = converterParaNumero(litrosDigitado);
-    }
-    if (valorTotalDigitado) {
-        valorTotal = converterParaNumero(valorTotalDigitado);
-    }
-    
-    // ***** NOVO: Verifica consistência e recalcula se necessário *****
-    if (litros > 0 && valorTotal > 0) {
-        // Verifica se o valor total confere com litros * preço
-        const valorCalculado = preco * litros;
-        if (Math.abs(valorTotal - valorCalculado) > 0.5) {
-            console.warn(`Inconsistência: Litros=${litros}, Valor=${valorTotal}, Esperado=${valorCalculado}`);
-            // Corrige o valor total
-            valorTotal = valorCalculado;
-            document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
+        
+        if (!litrosDigitado && !valorTotalDigitado) { 
+            alert('Informe Litros OU Valor Total!'); 
+            return; 
         }
-    } else if (valorTotal > 0 && litros === 0) {
-        litros = valorTotal / preco;
-        document.getElementById('litros').value = formatarNumero(litros, 3);
-    } else if (litros > 0 && valorTotal === 0) {
-        valorTotal = preco * litros;
-        document.getElementById('valorTotal').value = formatarNumero(valorTotal, 2);
+        
+        let litros = 0;
+        let valorTotal = 0;
+        
+        if (litrosDigitado) {
+            litros = converterParaNumero(litrosDigitado);
+        }
+        if (valorTotalDigitado) {
+            valorTotal = converterParaNumero(valorTotalDigitado);
+        }
+        
+        if (litros > 0 && valorTotal > 0) {
+            const valorCalculado = preco * litros;
+            if (Math.abs(valorTotal - valorCalculado) > 0.5) {
+                valorTotal = valorCalculado;
+                document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
+            }
+        } else if (valorTotal > 0 && litros === 0) {
+            litros = valorTotal / preco;
+            document.getElementById('litros').value = formatarNumero(litros, 3);
+        } else if (litros > 0 && valorTotal === 0) {
+            valorTotal = preco * litros;
+            document.getElementById('valorTotal').value = formatarNumero(valorTotal, 2);
+        }
+        
+        const confirmar = confirm(
+            `Confirme os dados do abastecimento:\n\n` +
+            `Preço/Litro: R$ ${formatarNumero(preco, 2)}\n` +
+            `Litros: ${formatarNumero(litros, 3)}\n` +
+            `Valor Total: R$ ${formatarNumero(valorTotal, 2)}\n` +
+            `KM Atual: ${kmAtual}\n\n` +
+            `Está correto?`
+        );
+        
+        if (!confirmar) return;
+        
+        const abastecimento = {
+            id: Date.now().toString(),
+            veiculoId: veiculoAtualId,
+            data: document.getElementById('data').value,
+            combustivel: document.getElementById('combustivel').value,
+            posto: document.getElementById('posto').value,
+            preco: preco,
+            litros: litros,
+            valorTotal: valorTotal,
+            kmAtual: kmAtual
+        };
+        
+        try {
+            await fetch(`${SCRIPT_URL}?action=addAbastecimento`, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(abastecimento)
+            });
+            alert('✅ Abastecimento salvo com sucesso!');
+            limparFormularioAbastecimento();
+            await carregarTodosDados();
+        } catch (error) {
+            console.error('Erro ao salvar:', error);
+            alert('Erro ao salvar. Verifique o console para mais detalhes.');
+        }
     }
-    
-    // ***** NOVO: Mostra confirmação dos dados calculados *****
-    const confirmar = confirm(
-        `Confirme os dados do abastecimento:\n\n` +
-        `Preço/Litro: R$ ${formatarNumero(preco, 2)}\n` +
-        `Litros: ${formatarNumero(litros, 3)}\n` +
-        `Valor Total: R$ ${formatarNumero(valorTotal, 2)}\n` +
-        `KM Atual: ${kmAtual}\n\n` +
-        `Está correto?`
-    );
-    
-    if (!confirmar) {
-        return; // Usuário cancelou
-    }
-    
-    const abastecimento = {
-        id: Date.now().toString(),
-        veiculoId: veiculoAtualId,
-        data: document.getElementById('data').value,
-        combustivel: document.getElementById('combustivel').value,
-        posto: document.getElementById('posto').value,
-        preco: preco,
-        litros: litros,
-        valorTotal: valorTotal,
-        kmAtual: kmAtual
-    };
-    
-    try {
-        await fetch(`${SCRIPT_URL}?action=addAbastecimento`, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(abastecimento)
-        });
-        alert('✅ Abastecimento salvo com sucesso!');
-        limparFormularioAbastecimento();
-        await carregarTodosDados();
-    } catch (error) {
-        console.error('Erro ao salvar:', error);
-        alert('Erro ao salvar. Verifique o console para mais detalhes.');
-    }
-}
     
     async function salvarManutencao() {
         if (!veiculoAtualId) {
@@ -820,38 +814,38 @@ async function salvarAbastecimento() {
         atualizarAnalisesExtras();
     }
     
-function atualizarDashboard() {
-    let m = calcularMetricas();
-    const veiculo = veiculos.find(v => v.id === veiculoAtualId);
-    if(!m) {
-        document.getElementById('dashboard').innerHTML = `<div class="metric-card">${veiculo?.nome}<div class="metric-value">--</div><div class="metric-label">Aguardando 2 abastecimentos</div></div>`;
-        document.getElementById('recomendacao').innerHTML = '📌 Adicione pelo menos 2 abastecimentos para ver as análises';
-        return;
+    function atualizarDashboard() {
+        let m = calcularMetricas();
+        const veiculo = veiculos.find(v => v.id === veiculoAtualId);
+        if(!m) {
+            document.getElementById('dashboard').innerHTML = `<div class="metric-card">${veiculo?.nome}<div class="metric-value">--</div><div class="metric-label">Aguardando 2 abastecimentos</div></div>`;
+            document.getElementById('recomendacao').innerHTML = '📌 Adicione pelo menos 2 abastecimentos para ver as análises';
+            return;
+        }
+        
+        document.getElementById('dashboard').innerHTML = `
+            <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${formatarNumero(m.mediaGeral, 1)} km/L</div><div class="metric-label">Média de consumo</div></div>
+            <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${formatarNumero(m.mediaCustoKM, 2)}</div><div class="metric-label">Média geral</div></div>
+            <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${formatarNumero(m.consumoGasolina, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoGasolina, 2)}/km</div></div>
+            <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${formatarNumero(m.consumoEtanol, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoEtanol, 2)}/km</div></div>
+            <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${formatarNumero(m.melhorConsumo, 1)} km/L</div><div class="metric-label">Pior: ${formatarNumero(m.piorConsumo, 1)} km/L</div></div>
+            <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${formatarNumero(m.ultimoConsumo, 1)} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
+        `;
+        
+        let alertas = [];
+        if(m.mediaGeral < 6) alertas.push({tipo:'danger', msg:'⚠️ Consumo muito baixo! Verifique pneus e manutenção.'});
+        else if(m.mediaGeral < 7) alertas.push({tipo:'warning', msg:'🟡 Consumo abaixo do ideal'});
+        else if(m.mediaGeral >= 9) alertas.push({tipo:'success', msg:'🌟 Excelente consumo! Você está dirigindo de forma eficiente!'});
+        else alertas.push({tipo:'success', msg:'🟢 Consumo dentro do esperado'});
+        
+        if(m.ultimoConsumo < m.mediaGeral * 0.85) alertas.push({tipo:'warning', msg:'🚨 Último consumo foi 15% menor que a média! Possível problema.'});
+        
+        document.getElementById('alertaContainer').innerHTML = alertas.map(a=>`<div class="alert alert-${a.tipo}">${a.msg}</div>`).join('');
+        
+        let melhor = parseFloat(m.custoGasolina) < parseFloat(m.custoEtanol) ? 
+            '✅ Recomendação: Gasolina (custo por km menor)' : '✅ Recomendação: Etanol (custo por km menor)';
+        document.getElementById('recomendacao').innerHTML = melhor;
     }
-    
-    document.getElementById('dashboard').innerHTML = `
-        <div class="metric-card"><div class="metric-label">${veiculo?.nome}</div><div class="metric-value">${formatarNumero(m.mediaGeral, 1)} km/L</div><div class="metric-label">Média de consumo</div></div>
-        <div class="metric-card"><div class="metric-label">💰 Custo por KM</div><div class="metric-value">R$ ${formatarNumero(m.mediaCustoKM, 2)}</div><div class="metric-label">Média geral</div></div>
-        <div class="metric-card"><div class="metric-label">⛽ Gasolina</div><div class="metric-value">${formatarNumero(m.consumoGasolina, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoGasolina, 2)}/km</div></div>
-        <div class="metric-card"><div class="metric-label">🌱 Etanol</div><div class="metric-value">${formatarNumero(m.consumoEtanol, 1)} km/L</div><div class="metric-label">R$ ${formatarNumero(m.custoEtanol, 2)}/km</div></div>
-        <div class="metric-card"><div class="metric-label">📊 Melhor consumo</div><div class="metric-value">${formatarNumero(m.melhorConsumo, 1)} km/L</div><div class="metric-label">Pior: ${formatarNumero(m.piorConsumo, 1)} km/L</div></div>
-        <div class="metric-card"><div class="metric-label">⏱️ Último consumo</div><div class="metric-value">${formatarNumero(m.ultimoConsumo, 1)} km/L</div><div class="metric-label">${m.ultimoConsumo >= m.mediaGeral ? '📈 Acima da média' : '📉 Abaixo da média'}</div></div>
-    `;
-    
-    let alertas = [];
-    if(m.mediaGeral < 6) alertas.push({tipo:'danger', msg:'⚠️ Consumo muito baixo! Verifique pneus e manutenção.'});
-    else if(m.mediaGeral < 7) alertas.push({tipo:'warning', msg:'🟡 Consumo abaixo do ideal para o Nissan Sentra CVT'});
-    else if(m.mediaGeral >= 9) alertas.push({tipo:'success', msg:'🌟 Excelente consumo! Você está dirigindo de forma eficiente!'});
-    else alertas.push({tipo:'success', msg:'🟢 Consumo dentro do esperado'});
-    
-    if(m.ultimoConsumo < m.mediaGeral * 0.85) alertas.push({tipo:'warning', msg:'🚨 Último consumo foi 15% menor que a média! Possível problema.'});
-    
-    document.getElementById('alertaContainer').innerHTML = alertas.map(a=>`<div class="alert alert-${a.tipo}">${a.msg}</div>`).join('');
-    
-    let melhor = parseFloat(m.custoGasolina) < parseFloat(m.custoEtanol) ? 
-        '✅ Recomendação: Gasolina (custo por km menor)' : '✅ Recomendação: Etanol (custo por km menor)';
-    document.getElementById('recomendacao').innerHTML = melhor;
-}
     
     function atualizarRankingGastos() {
         const dados = getDadosVeiculo();
@@ -924,9 +918,9 @@ function atualizarDashboard() {
             row.insertCell(2).textContent = d.combustivel;
             row.insertCell(3).textContent = d.posto;
             row.insertCell(4).textContent = d.kmRodados ? d.kmRodados.toLocaleString('pt-BR') : '-';
-            row.insertCell(5).textContent = d.litros ? formatarNumero(d.litros, 2) : '-';
-	    row.insertCell(6).textContent = d.consumo ? formatarNumero(d.consumo, 1) : 'Aguardando';
-	    row.insertCell(7).textContent = d.custoPorKM ? `R$ ${formatarNumero(d.custoPorKM, 2)}` : '-';
+            row.insertCell(5).textContent = d.litros ? formatarNumero(d.litros, 3) : '-';
+            row.insertCell(6).textContent = d.consumo ? formatarNumero(d.consumo, 1) : 'Aguardando';
+            row.insertCell(7).textContent = d.custoPorKM ? `R$ ${formatarNumero(d.custoPorKM, 2)}` : '-';
         });
     }
     
@@ -1035,9 +1029,9 @@ function atualizarDashboard() {
         const metaGeral = 7.5;
         
         let analises = '';
-	analises += `• Etanol: ${metaEtanol} km/L ${m.consumoEtanol >= metaEtanol ? '✅' : '⚠️ Abaixo da meta'}<br>`;
-	analises += `• Gasolina: ${metaGasolina} km/L ${m.consumoGasolina >= metaGasolina ? '✅' : '⚠️ Abaixo da meta'}<br>`;
-	analises += `• Média geral: ${metaGeral} km/L ${m.mediaGeral >= metaGeral ? '✅' : '⚠️ Abaixo da meta'}<br><br>`;
+        analises += `• Etanol: ${metaEtanol} km/L ${m.consumoEtanol >= metaEtanol ? '✅' : '⚠️ Abaixo da meta'}<br>`;
+        analises += `• Gasolina: ${metaGasolina} km/L ${m.consumoGasolina >= metaGasolina ? '✅' : '⚠️ Abaixo da meta'}<br>`;
+        analises += `• Média geral: ${metaGeral} km/L ${m.mediaGeral >= metaGeral ? '✅' : '⚠️ Abaixo da meta'}<br><br>`;
         
         const gastoMedioMensal = parseFloat(document.getElementById('custoMensalTotal')?.innerText?.replace('R$ ', '').replace(/\./g, '').replace(',', '.') || 0);
         if(gastoMedioMensal > 0) {
@@ -1120,38 +1114,31 @@ function atualizarDashboard() {
         document.getElementById('novoVeiculoAno').value = '';
     }
     
-  function calcularLitrosOuValor() {
-    const precoTexto = document.getElementById('preco').value;
-    const litrosTexto = document.getElementById('litros').value;
-    const valorTexto = document.getElementById('valorTotal').value;
-
-    const preco = converterParaNumero(precoTexto);
-
-    if (preco > 0) {
-        // Se AMBOS estão preenchidos, prioriza LITROS e recalcula VALOR
-        if (litrosTexto && litrosTexto !== '' && valorTexto && valorTexto !== '') {
-            const litros = converterParaNumero(litrosTexto);
-            const valorCalculado = preco * litros;
-            document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
-        }
-        // Se só tem LITROS, calcula VALOR
-        else if (litrosTexto && litrosTexto !== '') {
-            const litros = converterParaNumero(litrosTexto);
-            const valorCalculado = preco * litros;
-            document.getElementById('valorTotal').value = formatarNumero(valorCalculado, 2);
-        }
-        // Se só tem VALOR, calcula LITROS
-        else if (valorTexto && valorTexto !== '') {
-            const valor = converterParaNumero(valorTexto);
-            const litrosCalculado = valor / preco;
-            document.getElementById('litros').value = formatarNumero(litrosCalculado, 3);
-        }
+    // Configuração dos eventos
+    function configurarEventos() {
+        const precoInput = document.getElementById('preco');
+        const litrosInput = document.getElementById('litros');
+        const valorInput = document.getElementById('valorTotal');
+        
+        // Só calcula quando o usuário sai do campo (blur)
+        precoInput.addEventListener('blur', () => setTimeout(calcularLitrosOuValor, 100));
+        litrosInput.addEventListener('blur', () => setTimeout(calcularLitrosOuValor, 100));
+        valorInput.addEventListener('blur', () => setTimeout(calcularLitrosOuValor, 100));
+        
+        // Opcional: Calcular ao pressionar Enter
+        [precoInput, litrosInput, valorInput].forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    calcularLitrosOuValor();
+                    this.blur();
+                }
+            });
+        });
     }
-}
     
-    document.getElementById('preco').addEventListener('input', calcularLitrosOuValor);
-    document.getElementById('litros').addEventListener('input', calcularLitrosOuValor);
-    document.getElementById('valorTotal').addEventListener('input', calcularLitrosOuValor);
+    // Inicialização
+    configurarEventos();
     document.getElementById('data').valueAsDate = new Date();
     document.getElementById('dataManut').valueAsDate = new Date();
     
